@@ -3,25 +3,45 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   Image,
+  Navigator,
   Dimensions,
+  StatusBar,
   StyleSheet,
   Text,
-  TouchableHighlight,
+  TouchableOpacity,
   View
 } from 'react-native';
 
+//Camera Access
 import Camera from 'react-native-camera';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
+//File System and unique number generator
 const RNFS = require('react-native-fs');
 const UUID = require('uuid/v1');
+
+//external pages to load
+const HomePage = require('./components/HomePage').default
+const Settings = require('./components/Settings').default
+
+
 
 class CameraView extends Component {
   constructor(props) {
     super(props);
 
+    this.camera = null;
 
+    this.state = {
+      camera: {
+        aspect: Camera.constants.Aspect.fill,
+        captureTarget: Camera.constants.CaptureTarget.temp,
+        type: Camera.constants.Type.back,
+        orientation: Camera.constants.Orientation.auto,
+        flashMode: Camera.constants.FlashMode.auto,
+      }
+    };
   }
 
   copyTempPic (source) {
@@ -36,14 +56,17 @@ class CameraView extends Component {
       .then((check) => {
         console.log("checking: " + check)
         if(!check){
-            RNFS.mkdir(path)
+            RNFS.mkdir(path).then(console.log("success"))
+                            .catch(err => console.log("something wrong",err));
+        }
+        else {
+          RNFS.moveFile(source, path+"/"+utc+UUID()+".jpg")
+          .then(data => console.log('success: ', data))
+          .catch(err => console.error(err));
         }
       })
       .catch(err => console.error(err));
 
-      RNFS.moveFile(source, path+"/"+utc+UUID()+".jpg")
-        .then(data => console.log('success: ', data))
-        .catch(err => console.error(err));
 
       //Debug purposes only
       console.log("=============Current Directory==============")
@@ -52,48 +75,105 @@ class CameraView extends Component {
   }
 
 
-  takePicture() {
-    this.camera.capture()
+  takePicture = ()=> {
+    if(this.camera){
+      this.camera.capture()
       .then((data) => {
         this.copyTempPic(data.path);
       }
     )
     .catch(err => console.error(err));
+    }
   }
 
-  //TODO: Ipmplement this function
-  flipCamera() {
-    console.log(this.camera.type)
+  flipCamera = () => {
+    let newType;
+    const { back, front } = Camera.constants.Type;
+
+    if (this.state.camera.type === back) {
+      newType = front;
+    } else if (this.state.camera.type === front) {
+      newType = back;
+    }
+
+    this.setState({
+      camera: {
+        ...this.state.camera,
+        type: newType,
+      },
+    });
+
+  }
+
+  //TODO: Ipmplement change of  icons
+  fllashToggle = () => {
+    let newFlashMode;
+    const { auto, on, off } = Camera.constants.FlashMode;
+
+    if (this.state.camera.flashMode === auto) {
+      newFlashMode = on;
+    } else if (this.state.camera.flashMode === on) {
+      newFlashMode = off;
+    } else if (this.state.camera.flashMode === off) {
+      newFlashMode = auto;
+    }
+
+    this.setState({
+      camera: {
+        ...this.state.camera,
+        flashMode: newFlashMode,
+      },
+    });
+  }
+
+  onBackPressed = () => {
+    this.props.navigator.push({
+      id: 'HomePage'
+    })
+  }
+  onSettingsPressed = () => {
+    this.props.navigator.push({
+      id: 'Settings'
+    })
   }
 
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar animated hidden/>
         <Camera
           ref={(cam) => {
             this.camera = cam;
           }}
-          captureTarget = {Camera.constants.CaptureTarget.temp}
           style={styles.preview}
-          aspect={Camera.constants.Aspect.fill}>
+          aspect={this.state.camera.aspect}
+          captureTarget={this.state.camera.captureTarget}
+          type={this.state.camera.type}
+          flashMode={this.state.camera.flashMode}
+          defaultTouchToFocus
+          mirrorImage={false}
+        >
           <View style={styles.toolbar}>
               <Icon name='ios-arrow-back'
                 style= {styles.backbutton}
+                onPress = {this.onBackPressed}
                 size={30} />
               <Icon name='ios-settings'
                 style= {styles.settings}
+                onPress = {this.onSettingsPressed}
                 size={30} />
           </View>
 
           <View style={styles.footer}>
               <Icon name='ios-reverse-camera-outline'
-                onPress={this.flipCamera.bind(this)}
+                onPress={this.flipCamera}
                 style= {styles.flip} size={30} />
               <Icon name='ios-radio-button-on-outline'
-                onPress={this.takePicture.bind(this)}
+                onPress={this.takePicture}
                 style= {styles.camera} size={60} />
-              <Icon name='ios-analytics-outline'
+              <Icon name='ios-flash-outline'
                 style= {styles.analytics}
+                onPress={this.flashOn}
                 size={30}/>
           </View>
         </Camera>
