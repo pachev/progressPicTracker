@@ -12,39 +12,50 @@ import {
 
 import Camera from 'react-native-camera';
 import Icon from 'react-native-vector-icons/Ionicons';
-import FileSystem from 'react-native-filesystem';
-import FS from 'react-native-fs';
 
 
 const RNFS = require('react-native-fs');
+const UUID = require('uuid/v1');
 
 class CameraView extends Component {
   constructor(props) {
     super(props);
 
-    this.Camera = null;
 
-    this.state = {
-      camera: {
-        aspect: Camera.constants.Aspect.fill,
-        captureTarget: Camera.constants.CaptureTarget.disk,
-        type: Camera.constants.Type.back,
-        orientation: Camera.constants.Orientation.auto,
-        flashMode: Camera.constants.FlashMode.auto,
-      },
-      isRecording: false
-    }
+  }
 
+  copyTempPic (source) {
+    //This is in order to keep track of the images by date
+    //TODO: possibly see if time is retrievable from device
+    const utc = new Date().toJSON().slice(0,10);
+
+    //The main path of the pictures sotred
+    //TODO: generate all these paths the first time application starts
+    const path = RNFS.MainBundlePath + "/pics";
+    RNFS.exists(path)
+      .then((check) => {
+        console.log("checking: " + check)
+        if(!check){
+            RNFS.mkdir(path)
+        }
+      })
+      .catch(err => console.error(err));
+
+      RNFS.moveFile(source, path+"/"+utc+UUID()+".jpg")
+        .then(data => console.log('success: ', data))
+        .catch(err => console.error(err));
+
+      //Debug purposes only
+      console.log("=============Current Directory==============")
+      RNFS.readDir(path).then(results => console.table(results))
+                        .catch(err => console.error(err));
   }
 
 
   takePicture() {
-    const date = Date.now();
     this.camera.capture()
       .then((data) => {
-        console.log('data: ' + data.data);
-        console.log('path: ' + data.path);
-        const date = Date.now();
+        this.copyTempPic(data.path);
       }
     )
     .catch(err => console.error(err));
@@ -66,14 +77,24 @@ class CameraView extends Component {
           style={styles.preview}
           aspect={Camera.constants.Aspect.fill}>
           <View style={styles.toolbar}>
-              <Icon name='ios-arrow-back' style= {styles.backbutton} size={30} />
-              <Icon name='ios-settings' style= {styles.settings} size={30} />
+              <Icon name='ios-arrow-back'
+                style= {styles.backbutton}
+                size={30} />
+              <Icon name='ios-settings'
+                style= {styles.settings}
+                size={30} />
           </View>
 
           <View style={styles.footer}>
-              <Icon name='ios-reverse-camera-outline' onPress={this.flipCamera.bind(this)} style= {styles.flip} size={30} />
-              <Icon name='ios-radio-button-on-outline' onPress={this.takePicture.bind(this)} style= {styles.camera} size={60} />
-              <Icon name='ios-analytics-outline' style= {styles.analytics} size={30} />
+              <Icon name='ios-reverse-camera-outline'
+                onPress={this.flipCamera.bind(this)}
+                style= {styles.flip} size={30} />
+              <Icon name='ios-radio-button-on-outline'
+                onPress={this.takePicture.bind(this)}
+                style= {styles.camera} size={60} />
+              <Icon name='ios-analytics-outline'
+                style= {styles.analytics}
+                size={30}/>
           </View>
         </Camera>
       </View>
