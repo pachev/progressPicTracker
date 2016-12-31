@@ -5,6 +5,8 @@
 
 ##Installation
 `git clone https://github.com/pachev/progressPicTracker`
+
+
 `cd progressPicTracker && npm install`
 
 

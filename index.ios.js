@@ -1,4 +1,4 @@
 import React, { AppRegistry } from 'react-native';
-import progressPicTracker from './src/progressPicTracker';
+import CameraView from './src/components/CameraView';
 
-AppRegistry.registerComponent('progressPicTracker', () => progressPicTracker);
+AppRegistry.registerComponent('progressPicTracker', () => CameraView);

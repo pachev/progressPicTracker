@@ -12,8 +12,49 @@ import {
 
 import Camera from 'react-native-camera';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FileSystem from 'react-native-filesystem';
+import FS from 'react-native-fs';
 
-class progressPicTracker extends Component {
+
+const RNFS = require('react-native-fs');
+
+class CameraView extends Component {
+  constructor(props) {
+    super(props);
+
+    this.Camera = null;
+
+    this.state = {
+      camera: {
+        aspect: Camera.constants.Aspect.fill,
+        captureTarget: Camera.constants.CaptureTarget.disk,
+        type: Camera.constants.Type.back,
+        orientation: Camera.constants.Orientation.auto,
+        flashMode: Camera.constants.FlashMode.auto,
+      },
+      isRecording: false
+    }
+
+  }
+
+
+  takePicture() {
+    const date = Date.now();
+    this.camera.capture()
+      .then((data) => {
+        console.log('data: ' + data.data);
+        console.log('path: ' + data.path);
+        const date = Date.now();
+      }
+    )
+    .catch(err => console.error(err));
+  }
+
+  //TODO: Ipmplement this function
+  flipCamera() {
+    console.log(this.camera.type)
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -21,6 +62,7 @@ class progressPicTracker extends Component {
           ref={(cam) => {
             this.camera = cam;
           }}
+          captureTarget = {Camera.constants.CaptureTarget.temp}
           style={styles.preview}
           aspect={Camera.constants.Aspect.fill}>
           <View style={styles.toolbar}>
@@ -29,24 +71,13 @@ class progressPicTracker extends Component {
           </View>
 
           <View style={styles.footer}>
-              <Icon name='ios-reverse-camera-outline' onPres={this.flipCamera.bind(this)} style= {styles.flip} size={30} />
+              <Icon name='ios-reverse-camera-outline' onPress={this.flipCamera.bind(this)} style= {styles.flip} size={30} />
               <Icon name='ios-radio-button-on-outline' onPress={this.takePicture.bind(this)} style= {styles.camera} size={60} />
               <Icon name='ios-analytics-outline' style= {styles.analytics} size={30} />
           </View>
         </Camera>
       </View>
     );
-  }
-
-  takePicture() {
-    this.camera.capture()
-      .then((data) => console.log(data))
-      .catch(err => console.error(err));
-  }
-
-  flipCamera() {
-    console.log(this.camera.type)
-    this.camera.type = front;
   }
 }
 
@@ -104,4 +135,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default progressPicTracker;
+export default CameraView;
