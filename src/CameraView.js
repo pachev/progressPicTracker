@@ -21,9 +21,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const RNFS = require('react-native-fs');
 const UUID = require('uuid/v1');
 
-//external pages to load
-const HomePage = require('./components/HomePage').default
-const Settings = require('./components/Settings').default
 
 //TODO: Add a method of asking and retrieving user's weight
 
@@ -128,10 +125,12 @@ class CameraView extends Component {
   }
 
   onBackPressed = () => {
-    this.props.navigator.replacePreviousAndPop({
+    this.props.navigator.push({
       id: 'HomePage'
     })
   }
+
+  //TODO: Figure out a way to have settings come from bottom
   onSettingsPressed = () => {
     this.props.navigator.push({
       id: 'Settings'

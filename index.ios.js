@@ -10,7 +10,7 @@ import {
 //external pages to load
 const CameraView = require('./src/CameraView').default
 const HomePage = require('./src/components/HomePage').default
-const Settings = require('./src/components/Settings').default
+const Settings = require('./src/Settings/Settings').default
 const Analytics = require('./src/components/Analytics').default
 
 class progressPicTracker extends Component {

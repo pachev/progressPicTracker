@@ -19,7 +19,11 @@ const toolbarStyle = StyleSheet.create({
         textAlign:'center',
         fontWeight:'bold',
         flex:1
-    }
+    },
+    image: {
+      width: 400,
+      height: 200,
+  }
 });
 
 module.exports = toolbarStyle;

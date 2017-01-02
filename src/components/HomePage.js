@@ -3,10 +3,12 @@ import {
   AppRegistry,
   Text,
   View,
+  Image,
   StyleSheet,
   StatusBar,
   Navigator,
   TouchableOpacity,
+  TouchableHighlight,
   ListView,
   ScrollView,
   Switch,
@@ -22,15 +24,36 @@ import toolbarStyle from './Styles';
 //File System
 const RNFS = require('react-native-fs');
 
-//View to navigate to
-const Analytics = require('./Settings').default
-const CammeraView = require('./../CameraView.js').default
 
 class HomePage extends Component {
+
   constructor(props) {
     super(props)
+
+    var ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+
+    this.state = {
+      dataSource : ds
+    };
   }
 
+  componentDidMount() {
+    this.fetchProgressPics()
+  }
+
+  fetchProgressPics () {
+    const path = RNFS.MainBundlePath + "/pics";
+
+    RNFS.readDir(path)
+      .then((results) => {
+          this.setState ({
+            dataSource: this.state.dataSource.cloneWithRows(results)
+          })
+      })
+      .catch(err => console.error(err));
+  }
 
   onCameraPressed = () => {
     this.props.navigator.push({
@@ -42,6 +65,16 @@ class HomePage extends Component {
     this.props.navigator.push({
       id: 'Analytics'
     })
+  }
+
+  renderRow (rowData) {
+    const path = rowData.path
+    return (
+      <TouchableHighlight>
+        <Image style={toolbarStyle.image} source={{uri: 'file://'+path}}/>
+      </TouchableHighlight>
+    )
+
   }
   render() {
     return (
@@ -62,6 +95,12 @@ class HomePage extends Component {
                 size = {25}/>
           </TouchableOpacity>
         </View>
+        <ScrollView>
+          <ListView
+            dataSource={this.state.dataSource}
+            renderRow={this.renderRow.bind(this)}
+            />
+        </ScrollView>
       </View>
     )
   }
