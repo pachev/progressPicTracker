@@ -13,7 +13,33 @@ const HomePage = require('./src/components/HomePage').default
 const Settings = require('./src/Settings/Settings').default
 const Analytics = require('./src/components/Analytics').default
 
+const Config = require('./src/config');
+
+//Main Paths
+const picPath = Config.picPath;
+const graphPath = Config.picPath;
+const RNFS = require('react-native-fs');
+
 class progressPicTracker extends Component {
+
+  //Creating the directories that the application will use
+  pathCreate = RNFS.exists(picPath)
+  .then((check) => {
+    console.log("checking: " + check)
+    if(!check){
+      RNFS.mkdir(picPath).then(console.log("success creating Pic directory"))
+      .catch(err => console.log("Dir Error: ",err));
+    }
+    return Promise.all([RNFS.exists(graphPath)])
+  })
+  .then((check) => {
+    console.log("checking: " + check)
+    if(!check){
+      RNFS.mkdir(picPath).then(console.log("success creating graph Directory"))
+      .catch(err => console.log("Dir Error: ",err));
+    }
+  })
+  .catch(err => console.error(err));
 
 //sets the camera view as the initial navigator
   render () {

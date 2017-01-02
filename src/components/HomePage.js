@@ -15,15 +15,20 @@ import {
 } from 'react-native';
 
 
+
 //Icons from ionic
 import Icon from 'react-native-vector-icons/Ionicons';
 
 //Styles for the universal toolbar
 import toolbarStyle from './Styles';
 
+const Config = require('../config')
+
 //File System
 const RNFS = require('react-native-fs');
 
+//Main Paths
+const path = Config.picPath;
 
 class HomePage extends Component {
 
@@ -44,7 +49,6 @@ class HomePage extends Component {
   }
 
   fetchProgressPics () {
-    const path = RNFS.MainBundlePath + "/pics";
 
     RNFS.readDir(path)
       .then((results) => {

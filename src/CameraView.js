@@ -21,6 +21,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const RNFS = require('react-native-fs');
 const UUID = require('uuid/v1');
 
+const Config = require('./config');
+
+//Main Paths
+const path = Config.picPath;
 
 //TODO: Add a method of asking and retrieving user's weight
 
@@ -47,29 +51,14 @@ class CameraView extends Component {
     //TODO: possibly see if time is retrievable from device
     const utc = new Date().toJSON().slice(0,10);
 
-    //The main path of the pictures sotred
-    //TODO: generate all these paths the first time application starts
-    const path = RNFS.MainBundlePath + "/pics";
-    RNFS.exists(path)
-      .then((check) => {
-        console.log("checking: " + check)
-        if(!check){
-            RNFS.mkdir(path).then(console.log("success"))
-                            .catch(err => console.log("something wrong",err));
-        }
-        else {
-          RNFS.moveFile(source, path+"/"+utc+UUID()+".jpg")
-          .then(data => console.log('successfully copied file'))
-          .catch(err => console.error(err));
-        }
-      })
-      .catch(err => console.error(err));
+    RNFS.moveFile(source, path+"/"+utc+UUID()+".jpg")
+    .then(data => console.log('successfully copied file'))
+    .catch(err => console.error(err));
 
-
-      //Debug purposes only
-      console.log("=============Current Directory==============")
-      RNFS.readDir(path).then(results => console.table(results))
-                        .catch(err => console.error(err));
+    //Debug purposes only
+    console.log("=============Current Directory==============")
+    RNFS.readDir(path).then(results => console.table(results))
+    .catch(err => console.error(err));
   }
 
 
