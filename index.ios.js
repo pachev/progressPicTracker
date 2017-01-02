@@ -11,6 +11,7 @@ import {
 const CameraView = require('./src/CameraView').default
 const HomePage = require('./src/components/HomePage').default
 const Settings = require('./src/components/Settings').default
+const Analytics = require('./src/components/Analytics').default
 
 class progressPicTracker extends Component {
 
@@ -19,7 +20,7 @@ class progressPicTracker extends Component {
       return (
         <Navigator
           initialRoute = {{
-            id: 'CameraView'
+            id: 'HomePage'
           }}
           renderScene = {
             //calls below function for readability
@@ -34,12 +35,14 @@ class progressPicTracker extends Component {
   navigatorRenderScene(route,navigator){
     _navigator = navigator;
     switch(route.id){
+      case 'Analytics':
+        return(<Analytics navigator = {navigator} title = 'Analytics'/>)
+      case 'CameraView':
+        return(<CameraView navigator = {navigator} title = 'CameraView' />)
       case 'HomePage':
         return(<HomePage navigator = {navigator} title = 'HomePage'/>)
       case 'Settings':
-        return(<Settings navigator = {navigator} title = 'HomePage' />)
-      case 'CameraView':
-        return(<CameraView navigator = {navigator} title = 'CameraView' />)
+        return(<Settings navigator = {navigator} title = 'Settings' />)
     }
   }
 }

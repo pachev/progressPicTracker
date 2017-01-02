@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   Image,
+  TouchableOpacity,
   Navigator,
   Dimensions,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native';
 
@@ -25,6 +25,7 @@ const UUID = require('uuid/v1');
 const HomePage = require('./components/HomePage').default
 const Settings = require('./components/Settings').default
 
+//TODO: Add a method of asking and retrieving user's weight
 
 
 class CameraView extends Component {
@@ -61,7 +62,7 @@ class CameraView extends Component {
         }
         else {
           RNFS.moveFile(source, path+"/"+utc+UUID()+".jpg")
-          .then(data => console.log('success: ', data))
+          .then(data => console.log('successfully copied file'))
           .catch(err => console.error(err));
         }
       })
@@ -127,7 +128,7 @@ class CameraView extends Component {
   }
 
   onBackPressed = () => {
-    this.props.navigator.push({
+    this.props.navigator.replacePreviousAndPop({
       id: 'HomePage'
     })
   }
@@ -154,27 +155,38 @@ class CameraView extends Component {
           mirrorImage={false}
         >
           <View style={styles.toolbar}>
+              <TouchableOpacity>
               <Icon name='ios-arrow-back'
                 style= {styles.backbutton}
                 onPress = {this.onBackPressed}
                 size={30} />
+              </TouchableOpacity>
+              <TouchableOpacity>
               <Icon name='ios-settings'
                 style= {styles.settings}
                 onPress = {this.onSettingsPressed}
                 size={30} />
+              </TouchableOpacity>
           </View>
 
           <View style={styles.footer}>
+
+              <TouchableOpacity>
               <Icon name='ios-reverse-camera-outline'
                 onPress={this.flipCamera}
                 style= {styles.flip} size={30} />
+              </TouchableOpacity>
+              <TouchableOpacity>
               <Icon name='ios-radio-button-on-outline'
                 onPress={this.takePicture}
                 style= {styles.camera} size={60} />
+              </TouchableOpacity>
+              <TouchableOpacity>
               <Icon name='ios-flash-outline'
                 style= {styles.analytics}
                 onPress={this.flashOn}
                 size={30}/>
+              </TouchableOpacity>
           </View>
         </Camera>
       </View>
