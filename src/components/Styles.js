@@ -1,10 +1,13 @@
 'use strict'
-import { StyleSheet } from 'react-native';
+import {
+  StyleSheet,
+  Dimensions
+ } from 'react-native';
 
 const toolbarStyle = StyleSheet.create({
     toolbar:{
         // backgroundColor:'#81c04d',
-        backgroundColor:'#7D7D7D',
+        backgroundColor:'#203575',
         paddingTop:20,
         paddingBottom:10,
         flexDirection:'row'
@@ -21,8 +24,11 @@ const toolbarStyle = StyleSheet.create({
         flex:1
     },
     image: {
-      width: 400,
+      width: Dimensions.get('window').width-10,
       height: 200,
+    },
+    imageBox: {
+      margin: 5,
   }
 });
 

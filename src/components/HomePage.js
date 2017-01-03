@@ -74,7 +74,7 @@ class HomePage extends Component {
   renderRow (rowData) {
     const path = rowData.path
     return (
-      <TouchableHighlight>
+      <TouchableHighlight style={toolbarStyle.imageBox}>
         <Image style={toolbarStyle.image} source={{uri: 'file://'+path}}/>
       </TouchableHighlight>
     )
@@ -82,7 +82,7 @@ class HomePage extends Component {
   }
   render() {
     return (
-      <View>
+      <View style={{flex: 1}}>
         <StatusBar animated hidden/>
         <View style={toolbarStyle.toolbar}>
           <TouchableOpacity>
