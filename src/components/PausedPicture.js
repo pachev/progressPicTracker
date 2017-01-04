@@ -54,7 +54,7 @@ class PausedPicture extends Component {
 
     RNFS.moveFile(source, newPath)
     .then(data => console.log('successfully copied file'))
-    .then(this.goToImageView(this.state.picPath))
+    .then(this.goToImageView(newPath))
     .catch(err => console.error(err));
 
     //Debug purposes only

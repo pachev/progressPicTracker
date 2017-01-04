@@ -73,7 +73,6 @@ class ImageView extends Component {
   onPress = () => {
     var value = this.refs.form.getValue();
     if (value) {
-      console.log(value);
       this.saveMeasurements();
     }
 
