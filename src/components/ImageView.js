@@ -74,7 +74,10 @@ class ImageView extends Component {
     var value = this.refs.form.getValue();
     if (value) {
       console.log(value);
+      this.saveMeasurements();
     }
+
+
   }
 
   deleteFile = () => {
@@ -106,8 +109,10 @@ class ImageView extends Component {
 
   saveMeasurements () {
     AsyncStorage.setItem(this.state.key, JSON.stringify(this.state.value))
-    .then(value => console.log(value))
+    .then(value => console.log("Success Saving Measurements"))
     .catch(err => console.error(err))
+
+    this.goToCameraView();
 
   }
 

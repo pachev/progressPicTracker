@@ -5,6 +5,7 @@ import {
   View,
   Image,
   StyleSheet,
+  AsyncStorage,
   StatusBar,
   Dimensions,
   Navigator,
@@ -15,6 +16,7 @@ import {
   Switch,
 } from 'react-native';
 
+//TODO: Fix the displaying of weight
 
 
 //Icons from ionic
@@ -31,6 +33,7 @@ const RNFS = require('react-native-fs');
 //Main Paths
 const path = Config.picPath;
 
+
 class HomePage extends Component {
 
   constructor(props) {
@@ -42,18 +45,13 @@ class HomePage extends Component {
       rowHasChanged: (r1, r2) => r1 !== r2,
       sectionHeaderHasChanged: (s1, s2) => s1 !==s2
     });
+    const allWeights = null;
 
-    const measurements = {
-      weight: 0,
-      waist: 0,
-      hip: 0,
-      biceps: 0,
-
-    };
 
     this.state = {
-      value: measurements,
-      dataSource : picDataSource
+      dataSource : picDataSource,
+      isLoading : true,
+      allWeights: allWeights
 
     }
   }
@@ -63,6 +61,7 @@ class HomePage extends Component {
     //http://stackoverflow.com/questions/34393109/
     this.fetchProgressPics()
   }
+
 
   fetchProgressPics () {
 
@@ -91,6 +90,7 @@ class HomePage extends Component {
         let datablob = {},
             sectionIds = [],
             rowIds = [],
+            retrievalKeys = [],
             i = 0;
 
         // iterate over date object to set headers and row data
@@ -106,6 +106,7 @@ class HomePage extends Component {
              //the uuid is the last 40 characters of the filename minus ext
              const uuid = date.slice(-40).slice(0, -4);
 
+             retrievalKeys.push(uuid)
              rowIds[i].push(uuid);
 
              //unique way of grabbing data required for datasource
@@ -117,8 +118,33 @@ class HomePage extends Component {
         this.setState ({
 
           dataSource: this.state.dataSource.cloneWithRowsAndSections(datablob,
-                                            sectionIds, rowIds)
+                                            sectionIds, rowIds),
+          retrievalKeys
+
         })
+        return retrievalKeys;
+      })
+      .then((results) => {
+        let allWeights = {}
+
+        AsyncStorage.multiGet(results, (err, stores) => {
+          stores.map( (result, i, store) => {
+            let key = store[i][0];
+            let val = store[i][1];
+            if(val !==null){
+              measurements = JSON.parse(val)
+              allWeights[key] = measurements.weight
+            }else{ allWeights[key] = 0}
+          });
+
+        })
+
+        console.log("weights are being set now");
+        this.setState ({
+          allWeights: allWeights,
+          isLoading: false
+        })
+
       })
       .catch(err => console.error(err));
   }
@@ -160,13 +186,16 @@ class HomePage extends Component {
 //single row rendering function
   renderDateRow (rowData) {
 
-//TODO: Swipe to delet
+    const key = rowData.slice(-40).slice(0,-4);
+    const weight = this.state.allWeights[key]
+
+
     return (
       <TouchableHighlight
         onPress = {() => this.goToImageView(rowData)}>
       <View style={styles.imageBox}>
         <Image style={styles.image} source={{uri: 'file://'+rowData}}/>
-        <Text >Weight: {rowData.slice(-15).slice(1,-4)}</Text>
+        <Text >Weight: {weight}</Text>
       </View>
       </TouchableHighlight>
 
@@ -185,6 +214,13 @@ class HomePage extends Component {
     );
   }
   render() {
+    if (this.state.isLoading) {
+      console.log(this.state.isLoading)
+      console.log(this.state.allWeights)
+      return (<View><Text>Loading...</Text></View>);
+    } else {
+
+
     return (
       <View style={{flex: 1}}>
         <StatusBar animated hidden/>
@@ -204,6 +240,7 @@ class HomePage extends Component {
           </TouchableOpacity>
         </View>
           <ListView
+            enableEmptySections={true}
             dataSource={this.state.dataSource}
             renderRow={this.renderDateRow.bind(this)}
             renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator} />}
@@ -212,6 +249,7 @@ class HomePage extends Component {
       </View>
     )
   }
+}
 
 }
 const styles = StyleSheet.create({
