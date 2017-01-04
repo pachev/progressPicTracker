@@ -29,7 +29,14 @@ const toolbarStyle = StyleSheet.create({
     },
     imageBox: {
       margin: 5,
-  }
-});
+    },
+    headerSection: {
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: 5,
+      backgroundColor: '#4a505e'
+    }
+  });
 
 module.exports = toolbarStyle;

@@ -35,16 +35,21 @@ class HomePage extends Component {
   constructor(props) {
     super(props)
 
-    var ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
+    const picDataSource = new ListView.DataSource({
+      getSectionHeaderData: this.getSectionData,
+      getRowData: this.getRowData,
+      rowHasChanged: (r1, r2) => r1 !== r2,
+      sectionHeaderHasChanged: (s1, s2) => s1 !==s2
     });
 
     this.state = {
-      dataSource : ds
+      dataSource : picDataSource
     };
   }
 
   componentDidMount() {
+    //This function is called as the scene is rendered
+    //http://stackoverflow.com/questions/34393109/
     this.fetchProgressPics()
   }
 
@@ -52,13 +57,72 @@ class HomePage extends Component {
 
     RNFS.readDir(path)
       .then((results) => {
-          this.setState ({
-            dataSource: this.state.dataSource.cloneWithRows(results)
-          })
+        //Seperates results into dates and file path for ListView
+        let dates = {}
+        results.forEach(file => {
+          const date = file.name.slice(0,10);
+          const ext = file.name.split(".").pop();
+
+          if(!(date in dates) && ext === 'jpg'){
+            dates[date] = []
+          }
+          else{
+            if(ext === 'jpg')
+            //resolves bad filepath issues for image source
+              dates[date].push(file.path)
+          }
+
+        })
+
+        return dates;
+      })
+      .then ((dates) => {
+        let datablob = {},
+            sectionIds = [],
+            rowIds = [],
+            i = 0;
+
+        // iterate over date object to set headers and row data
+        for (key in dates) {
+
+          //each header is a date
+           sectionIds.push(key)
+          //each row is an array of elements to be rendered
+           rowIds[i] = []
+           dates[key].forEach((date) => {
+
+             //getting unique identifier without extension
+             //the uuid is the last 40 characters of the filename minus ext
+             const uuid = date.slice(-40).slice(0, -4);
+
+             rowIds[i].push(uuid);
+
+             //unique way of grabbing data required for datasource
+             datablob[key + ':' + uuid] = date;
+           })
+           i++;
+        }
+
+        this.setState ({
+
+          dataSource: this.state.dataSource.cloneWithRowsAndSections(datablob,
+                                            sectionIds, rowIds)
+        })
       })
       .catch(err => console.error(err));
   }
 
+// These two functions dictate how Listview datasource obtains it's values
+  getSectionData = (dataBlob, sectionID) => {
+    return dataBlob[sectionID];
+  }
+  getRowData = (dataBlob, sectionID, rowID) => {
+    return dataBlob[sectionID + ':' + rowID];
+  }
+
+
+//Navigator functions for scene transitions
+//TODO: possibly switch to navigatorIOS
   onCameraPressed = () => {
     this.props.navigator.push({
       id: 'CameraView'
@@ -71,14 +135,26 @@ class HomePage extends Component {
     })
   }
 
-  renderRow (rowData) {
-    const path = rowData.path
-    return (
-      <TouchableHighlight style={toolbarStyle.imageBox}>
-        <Image style={toolbarStyle.image} source={{uri: 'file://'+path}}/>
-      </TouchableHighlight>
-    )
 
+//single row rendering function
+  renderDateRow (rowData) {
+
+    return (
+      <View style={toolbarStyle.imageBox}>
+      <TouchableHighlight>
+        <Image style={toolbarStyle.image} source={{uri: 'file://'+rowData}}/>
+      </TouchableHighlight>
+      </View>
+    )
+  }
+
+//single Header rendering function
+  renderDateHeader (sectionData, sectionID) {
+    return (
+      <View style={toolbarStyle.headerSection}>
+        <Text style={{color: 'white'}}>{sectionID}</Text>
+      </View>
+    );
   }
   render() {
     return (
@@ -102,7 +178,8 @@ class HomePage extends Component {
         <ScrollView>
           <ListView
             dataSource={this.state.dataSource}
-            renderRow={this.renderRow.bind(this)}
+            renderRow={this.renderDateRow.bind(this)}
+            renderSectionHeader={this.renderDateHeader.bind(this)}
             />
         </ScrollView>
       </View>
