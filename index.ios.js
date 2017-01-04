@@ -13,6 +13,7 @@ const HomePage = require('./src/components/HomePage').default
 const Settings = require('./src/Settings/Settings').default
 const Analytics = require('./src/components/Analytics').default
 const PausedPicture = require('./src/components/PausedPicture').default
+const ImageView = require('./src/components/ImageView').default
 
 const Config = require('./src/config');
 
@@ -72,6 +73,8 @@ class progressPicTracker extends Component {
         return(<Settings navigator = {navigator} title = 'Settings' />)
       case 'PausedPicture':
         return(<PausedPicture navigator = {navigator} {...route.passProps} title = 'PausedPicture' />)
+      case 'ImageView':
+        return(<ImageView navigator = {navigator} {...route.passProps} title = 'ImageView' />)
     }
   }
 }

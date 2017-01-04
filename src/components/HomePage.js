@@ -136,13 +136,24 @@ class HomePage extends Component {
     })
   }
 
+  goToImageView (path) {
+    this.props.navigator.push({
+      id: 'ImageView',
+      passProps: {
+        picPath: path
+      }
+    })
+
+  }
+
 
 //single row rendering function
   renderDateRow (rowData) {
 
 //TODO: Swipe to delet
     return (
-      <TouchableHighlight>
+      <TouchableHighlight
+        onPress = {() => this.goToImageView(rowData)}>
       <View style={styles.imageBox}>
         <Image style={styles.image} source={{uri: 'file://'+rowData}}/>
         <Text >Weight: {rowData.slice(-15).slice(1,-4)}</Text>
