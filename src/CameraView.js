@@ -46,27 +46,22 @@ class CameraView extends Component {
     };
   }
 
-  copyTempPic (source) {
-    //This is in order to keep track of the images by date
-    //TODO: possibly see if time is retrievable from device
-    const utc = new Date().toJSON().slice(0,10);
-
-    RNFS.moveFile(source, path+"/"+utc+UUID()+".jpg")
-    .then(data => console.log('successfully copied file'))
-    .catch(err => console.error(err));
-
-    //Debug purposes only
-    console.log("=============Current Directory==============")
-    RNFS.readDir(path).then(results => console.table(results))
-    .catch(err => console.error(err));
+  pausePicture (path) {
+    this.props.navigator.push({
+      id: 'PausedPicture',
+      passProps: {
+        picPath: path
+      }
+    })
   }
+
 
 
   takePicture = ()=> {
     if(this.camera){
       this.camera.capture()
       .then((data) => {
-        this.copyTempPic(data.path);
+        this.pausePicture(data.path);
       }
     )
     .catch(err => console.error(err));

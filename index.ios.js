@@ -12,6 +12,7 @@ const CameraView = require('./src/CameraView').default
 const HomePage = require('./src/components/HomePage').default
 const Settings = require('./src/Settings/Settings').default
 const Analytics = require('./src/components/Analytics').default
+const PausedPicture = require('./src/components/PausedPicture').default
 
 const Config = require('./src/config');
 
@@ -46,7 +47,7 @@ class progressPicTracker extends Component {
       return (
         <Navigator
           initialRoute = {{
-            id: 'HomePage'
+            id: 'CameraView'
           }}
           renderScene = {
             //calls below function for readability
@@ -64,11 +65,13 @@ class progressPicTracker extends Component {
       case 'Analytics':
         return(<Analytics navigator = {navigator} title = 'Analytics'/>)
       case 'CameraView':
-        return(<CameraView navigator = {navigator} title = 'CameraView' />)
+        return(<CameraView navigator = {navigator} {...route.passProps} title = 'CameraView' />)
       case 'HomePage':
         return(<HomePage navigator = {navigator} title = 'HomePage'/>)
       case 'Settings':
         return(<Settings navigator = {navigator} title = 'Settings' />)
+      case 'PausedPicture':
+        return(<PausedPicture navigator = {navigator} {...route.passProps} title = 'PausedPicture' />)
     }
   }
 }

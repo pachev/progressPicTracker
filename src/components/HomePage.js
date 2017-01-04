@@ -145,13 +145,17 @@ class HomePage extends Component {
       <TouchableHighlight>
       <View style={styles.imageBox}>
         <Image style={styles.image} source={{uri: 'file://'+rowData}}/>
+        <Text >Weight: {rowData.slice(-15).slice(1,-4)}</Text>
       </View>
       </TouchableHighlight>
+
     )
   }
 
 //single Header rendering function
   renderDateHeader (sectionData, sectionID) {
+
+    //TODO: add days passed to section
 
     return (
       <View style={styles.headerSection}>
