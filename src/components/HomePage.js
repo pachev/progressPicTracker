@@ -43,9 +43,19 @@ class HomePage extends Component {
       sectionHeaderHasChanged: (s1, s2) => s1 !==s2
     });
 
-    this.state = {
-      dataSource : picDataSource
+    const measurements = {
+      weight: 0,
+      waist: 0,
+      hip: 0,
+      biceps: 0,
+
     };
+
+    this.state = {
+      value: measurements,
+      dataSource : picDataSource
+
+    }
   }
 
   componentDidMount() {

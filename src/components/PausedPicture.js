@@ -50,8 +50,9 @@ class PausedPicture extends Component {
     //This is in order to keep track of the images by date
     //TODO: possibly see if time is retrievable from device
     const utc = new Date().toJSON().slice(0,10);
+    const newPath = path+"/"+utc+UUID()+".jpg"
 
-    RNFS.moveFile(source, path+"/"+utc+UUID()+".jpg")
+    RNFS.moveFile(source, newPath)
     .then(data => console.log('successfully copied file'))
     .then(this.goToImageView(this.state.picPath))
     .catch(err => console.error(err));

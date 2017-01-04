@@ -4,6 +4,8 @@ import React, { Component } from 'react';
 import {
   Image,
   Dimensions,
+  ScrollView,
+  NumberInput,
   AsyncStorage,
   TouchableOpacity,
   StatusBar,
@@ -18,10 +20,22 @@ const RNFS = require('react-native-fs');
 const UUID = require('uuid/v1');
 
 const Config = require('../config');
+//For forms
+const TFORM = require('tcomb-form-native');
 
 //Main Paths
 const mainPicPath = Config.picPath;
 
+
+const Form = TFORM.form.Form;
+
+// defining the measurements model for the form
+var Measurements = TFORM.struct({
+  weight: TFORM.maybe(TFORM.Number),
+  waist: TFORM.maybe(TFORM.Number),
+  hip: TFORM.maybe(TFORM.Number),
+  biceps: TFORM.maybe(TFORM.Number),
+});
 
 class ImageView extends Component {
   constructor(props) {
@@ -38,7 +52,7 @@ class ImageView extends Component {
     this.state = {
       picPath : props.picPath,
       key: props.picPath.slice(-40).slice(0,-4),
-      measurements: measurements
+      value: measurements,
 
     }
 
@@ -50,6 +64,31 @@ class ImageView extends Component {
     this.loadMeasurements()
   }
 
+  onChange = (value) => {
+    this.setState({
+      value: value
+    })
+  }
+
+  onPress = () => {
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+    }
+  }
+
+  deleteFile = () => {
+    RNFS.unlink(this.state.picPath)
+    .then(() => {
+      console.log('FILE DELETED');
+      this.goToCameraView();
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+
+  }
+
   loadMeasurements () {
 
       AsyncStorage.getItem(this.state.key)
@@ -57,7 +96,7 @@ class ImageView extends Component {
         console.log(value)
         if(value !== null) {
           this.setState({
-            measurements: JSON.parse(value)
+            value: JSON.parse(value)
           })
         }
       })
@@ -66,30 +105,41 @@ class ImageView extends Component {
   }
 
   saveMeasurements () {
-    const measurements = {
-      weight: 10,
-      waist: 10,
-      hip: 10,
-      biceps: 10,
-
-    };
-    AsyncStorage.setItem(this.state.key, JSON.stringify(measurements))
+    AsyncStorage.setItem(this.state.key, JSON.stringify(this.state.value))
     .then(value => console.log(value))
     .catch(err => console.error(err))
 
   }
 
+  goToCameraView (){
+    this.props.navigator.push({
+      id: 'HomePage'
+    })
+  }
+
   render () {
     return (
-      <View style = {styles.container}>
-        <Text>
-        Weight =  {this.state.measurements.weight}
-        </Text>
-        <TouchableOpacity style={styles.button2}
-          onPress={() => this.saveMeasurements()}>
-        <Text style={styles.text}>save</Text>
+      <ScrollView style = {styles.container}>
+        <Image style={styles.image} source={{uri: 'file://'+this.state.picPath}}/>
+        <View>
+        <Form
+          ref="form"
+          type={Measurements}
+          value = {this.state.value}
+          onChange = {this.onChange}
+        />
+        </View>
+        <View style={styles.footer}>
+        <TouchableOpacity style={styles.button1}
+          onPress={this.deleteFile}>
+        <Text style={styles.text}>Delete</Text>
         </TouchableOpacity>
-      </View>
+        <TouchableOpacity style={styles.button2}
+          onPress={this.onPress}>
+        <Text style={styles.text}>Save</Text>
+        </TouchableOpacity>
+        </View>
+      </ScrollView>
     )
   }
 
@@ -98,9 +148,8 @@ class ImageView extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 1,
+    margin: 2,
   },
   button1: {
     borderColor: '#8E8E8E',
@@ -128,7 +177,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height / 1.2,
+    height: Dimensions.get('window').height / 1.7,
   },
   imageBox: {
     backgroundColor: 'white',
