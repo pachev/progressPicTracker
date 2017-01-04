@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   StatusBar,
+  Dimensions,
   Navigator,
   TouchableOpacity,
   TouchableHighlight,
@@ -139,19 +140,21 @@ class HomePage extends Component {
 //single row rendering function
   renderDateRow (rowData) {
 
+//TODO: Swipe to delet
     return (
-      <View style={toolbarStyle.imageBox}>
       <TouchableHighlight>
-        <Image style={toolbarStyle.image} source={{uri: 'file://'+rowData}}/>
-      </TouchableHighlight>
+      <View style={styles.imageBox}>
+        <Image style={styles.image} source={{uri: 'file://'+rowData}}/>
       </View>
+      </TouchableHighlight>
     )
   }
 
 //single Header rendering function
   renderDateHeader (sectionData, sectionID) {
+
     return (
-      <View style={toolbarStyle.headerSection}>
+      <View style={styles.headerSection}>
         <Text style={{color: 'white'}}>{sectionID}</Text>
       </View>
     );
@@ -175,17 +178,52 @@ class HomePage extends Component {
                 size = {25}/>
           </TouchableOpacity>
         </View>
-        <ScrollView>
           <ListView
             dataSource={this.state.dataSource}
             renderRow={this.renderDateRow.bind(this)}
+            renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator} />}
             renderSectionHeader={this.renderDateHeader.bind(this)}
             />
-        </ScrollView>
       </View>
     )
   }
 
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    borderColor: '#8E8E8E',
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  text: {
+    color: '#8E8E8E',
+  },
+  separator: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#8E8E8E',
+  },
+  image: {
+    width: Dimensions.get('window').width,
+    height: 200,
+  },
+  imageBox: {
+    backgroundColor: 'white',
+  },
+  headerSection: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#c4c9d1'
+  }
+});
 
 export default HomePage;

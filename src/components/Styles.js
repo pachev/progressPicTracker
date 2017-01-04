@@ -4,6 +4,7 @@ import {
   Dimensions
  } from 'react-native';
 
+//refractor and export multiple styles
 const toolbarStyle = StyleSheet.create({
     toolbar:{
         // backgroundColor:'#81c04d',
@@ -23,20 +24,6 @@ const toolbarStyle = StyleSheet.create({
         fontWeight:'bold',
         flex:1
     },
-    image: {
-      width: Dimensions.get('window').width-10,
-      height: 200,
-    },
-    imageBox: {
-      margin: 5,
-    },
-    headerSection: {
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      margin: 5,
-      backgroundColor: '#4a505e'
-    }
   });
 
 module.exports = toolbarStyle;
