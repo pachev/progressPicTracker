@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {
   AppRegistry,
   Text,
+  ActivityIndicator,
   View,
   Image,
   StyleSheet,
@@ -69,21 +70,19 @@ class HomePage extends Component {
       .then((results) => {
         //Seperates results into dates and file path for ListView
         let dates = {}
-        results.forEach(file => {
+        results.reverse().forEach(file => {
           const date = file.name.slice(0,10);
           const ext = file.name.split(".").pop();
 
           if(!(date in dates) && ext === 'jpg'){
             dates[date] = []
           }
-          else{
-            if(ext === 'jpg')
-            //resolves bad filepath issues for image source
-              dates[date].push(file.path)
-          }
+
+          if(ext === 'jpg')
+            dates[date].push(file.path)
 
         })
-
+        console.log(dates);
         return dates;
       })
       .then ((dates) => {
@@ -115,19 +114,15 @@ class HomePage extends Component {
            i++;
         }
 
-        this.setState ({
-
-          dataSource: this.state.dataSource.cloneWithRowsAndSections(datablob,
-                                            sectionIds, rowIds),
-          retrievalKeys
-
-        })
-        return retrievalKeys;
+        return [retrievalKeys, datablob, sectionIds, rowIds];
       })
       .then((results) => {
-        let allWeights = {}
+        let allWeights = {},
+        datablob = results[1],
+        sectionIds = results[2],
+        rowIds = results[3];
 
-        AsyncStorage.multiGet(results, (err, stores) => {
+        AsyncStorage.multiGet(results[0], (err, stores) => {
           stores.map( (result, i, store) => {
             let key = store[i][0];
             let val = store[i][1];
@@ -136,13 +131,16 @@ class HomePage extends Component {
               allWeights[key] = measurements.weight
             }else{ allWeights[key] = 0}
           });
+          this.setState({
+            isLoading: false
+          })
 
         })
 
-        console.log("weights are being set now");
         this.setState ({
+          dataSource: this.state.dataSource.cloneWithRowsAndSections(datablob,
+                                            sectionIds, rowIds),
           allWeights: allWeights,
-          isLoading: false
         })
 
       })
@@ -215,11 +213,14 @@ class HomePage extends Component {
   }
   render() {
     if (this.state.isLoading) {
-      console.log(this.state.isLoading)
-      console.log(this.state.allWeights)
-      return (<View><Text>Loading...</Text></View>);
+      return (
+        <ActivityIndicator
+        animating={true}
+        style={[styles.centering, {height: 80}]}
+        size="large"
+      />);
     } else {
-
+      console.log(this.state.dataSource)
 
     return (
       <View style={{flex: 1}}>
@@ -286,7 +287,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#c4c9d1'
-  }
+  },
+   centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
 });
 
 export default HomePage;

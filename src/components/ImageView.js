@@ -116,7 +116,7 @@ class ImageView extends Component {
   }
 
   goToCameraView (){
-    this.props.navigator.push({
+    this.props.navigator.resetTo({
       id: 'HomePage'
     })
   }
