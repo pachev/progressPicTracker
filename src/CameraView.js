@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   Image,
+  Button,
   TouchableOpacity,
   Navigator,
   Dimensions,
@@ -21,10 +22,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const RNFS = require('react-native-fs');
 const UUID = require('uuid/v1');
 
+const Modal = require('react-native-modalbox');
+
 const Config = require('./config');
 
 //Main Paths
 const path = Config.picPath;
+
 
 //TODO: Add a method of asking and retrieving user's weight
 
@@ -36,13 +40,14 @@ class CameraView extends Component {
     this.camera = null;
 
     this.state = {
+      showSettings: false,
       camera: {
         aspect: Camera.constants.Aspect.fill,
         captureTarget: Camera.constants.CaptureTarget.temp,
         type: Camera.constants.Type.back,
         orientation: Camera.constants.Orientation.auto,
         flashMode: Camera.constants.FlashMode.auto,
-      }
+      },
     };
   }
 
@@ -50,7 +55,7 @@ class CameraView extends Component {
     this.props.navigator.push({
       id: 'PausedPicture',
       passProps: {
-        picPath: path
+        picPath: path,
       }
     })
   }
@@ -109,6 +114,7 @@ class CameraView extends Component {
   }
 
   onBackPressed = () => {
+    console.log("back pressed");
     this.props.navigator.push({
       id: 'HomePage'
     })
@@ -116,12 +122,30 @@ class CameraView extends Component {
 
   //TODO: Figure out a way to have settings come from bottom
   onSettingsPressed = () => {
-    this.props.navigator.push({
-      id: 'Settings'
+    console.log("Settings pressed")
+    this.setState({
+      showSettings: true
     })
   }
 
+
+  closeSetting =() => {
+    console.log("closeSetting");
+    this.setState ({
+    showSettings: false
+  })
+  }
+
+
   render() {
+    const close = <TouchableOpacity
+      onPress={() => this.closeSetting()}
+      style={[styles.btn, styles.btnModal]}>
+      <Text style={{color: 'white', fontWeight:'bold', fontSize: 23}}>
+        X
+      </Text>
+    </TouchableOpacity>
+
     return (
       <View style={styles.container}>
         <StatusBar animated hidden/>
@@ -146,8 +170,8 @@ class CameraView extends Component {
               </TouchableOpacity>
               <TouchableOpacity>
               <Icon name='ios-settings'
-                style= {styles.settings}
                 onPress = {this.onSettingsPressed}
+                style= {styles.settings}
                 size={30} />
               </TouchableOpacity>
           </View>
@@ -172,6 +196,13 @@ class CameraView extends Component {
               </TouchableOpacity>
           </View>
         </Camera>
+        <Modal style={styles.modal}
+          position={"center"}
+          isOpen={this.state.showSettings}
+          backdropContent={close}
+          >
+          <Text style={styles.text}>Where all the settings will go</Text>
+        </Modal>
       </View>
     );
   }
@@ -180,6 +211,25 @@ class CameraView extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  btn: {
+    margin: 10,
+    backgroundColor: "#3B5998",
+    padding: 10
+  },
+  btnModal: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 50,
+    height: 50,
+    backgroundColor: "transparent"
+  },
+  modal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 300,
+    width: 300
   },
   backbutton: {
     backgroundColor: 'rgba(0,0,0,0)',
