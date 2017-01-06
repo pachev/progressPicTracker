@@ -1,6 +1,10 @@
 package com.progresspictracker;
 
 import com.facebook.react.ReactActivity;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.rnfs.RNFSPackage;
+import com.benwixen.rnfilesystem.RNFileSystemPackage;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
 
 public class MainActivity extends ReactActivity {
 
@@ -10,6 +14,6 @@ public class MainActivity extends ReactActivity {
      */
     @Override
     protected String getMainComponentName() {
-        return "progressPicTracker";
+        return "ProgressPicTracker";
     }
 }

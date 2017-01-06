@@ -12,6 +12,9 @@
     "react-native-camera": "git+https://github.com/lwansbrough/react-native-camera.git",
     "react-native-filesystem": "^0.1.0",
     "react-native-fs": "^2.0.1-rc.2",
+    "react-native-pathjs-charts": "0.0.22",
+    "react-native-popup-menu": "^0.6.1",
+    "react-native-svg": "^4.4.0",
     "react-native-vector-icons": "^3.0.0",
     "tcomb-form-native": "^0.6.3",
     "uuid": "^3.0.1"

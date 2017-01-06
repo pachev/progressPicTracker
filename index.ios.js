@@ -48,7 +48,7 @@ class progressPicTracker extends Component {
       return (
         <Navigator
           initialRoute = {{
-            id: 'HomePage'
+            id: 'CameraView'
           }}
           renderScene = {
             //calls below function for readability
@@ -64,7 +64,7 @@ class progressPicTracker extends Component {
     _navigator = navigator;
     switch(route.id){
       case 'Analytics':
-        return(<Analytics navigator = {navigator} title = 'Analytics'/>)
+        return(<Analytics navigator = {navigator}  {...route.passProps} title = 'Analytics'/>)
       case 'CameraView':
         return(<CameraView navigator = {navigator} {...route.passProps} title = 'CameraView' />)
       case 'HomePage':

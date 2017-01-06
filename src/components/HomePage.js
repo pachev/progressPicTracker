@@ -17,8 +17,7 @@ import {
   Switch,
 } from 'react-native';
 
-//TODO: Fix the displaying of weight
-
+//TODO: Implement a methdod to view images by month and year
 
 //Icons from ionic
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -47,12 +46,16 @@ class HomePage extends Component {
       sectionHeaderHasChanged: (s1, s2) => s1 !==s2
     });
     const allWeights = null;
+    const allMeasurements = null;
+    const datesTaken = null;
 
 
     this.state = {
       dataSource : picDataSource,
       isLoading : true,
-      allWeights: allWeights
+      dates : datesTaken,
+      allWeights: allWeights,
+      allMeasurements: allMeasurements
 
     }
   }
@@ -60,6 +63,13 @@ class HomePage extends Component {
   componentDidMount() {
     //This function is called as the scene is rendered
     //http://stackoverflow.com/questions/34393109/
+    this.fetchProgressPics()
+  }
+
+  componentWillReceiveProps() {
+    //This function is called as the scene is rendered
+    //http://stackoverflow.com/questions/34393109/
+    console.log("Inside componentWillReceiveProps");
     this.fetchProgressPics()
   }
 
@@ -118,6 +128,8 @@ class HomePage extends Component {
       })
       .then((results) => {
         let allWeights = {},
+        allMeasurements = {},
+        datesTaken = {},
         datablob = results[1],
         sectionIds = results[2],
         rowIds = results[3];
@@ -129,7 +141,13 @@ class HomePage extends Component {
             if(val !==null){
               measurements = JSON.parse(val)
               allWeights[key] = measurements.weight
-            }else{ allWeights[key] = 0}
+              allMeasurements[key] = measurements
+              datesTaken[key] = measurements.dateTaken
+            }else{
+              allWeights[key] = 0;
+              allMeasurements[key] = 0;
+              datesTaken[key] = 0;
+            }
           });
           this.setState({
             isLoading: false
@@ -141,6 +159,7 @@ class HomePage extends Component {
           dataSource: this.state.dataSource.cloneWithRowsAndSections(datablob,
                                             sectionIds, rowIds),
           allWeights: allWeights,
+          allMeasurements: allMeasurements,
         })
 
       })
@@ -159,14 +178,18 @@ class HomePage extends Component {
 //Navigator functions for scene transitions
 //TODO: possibly switch to navigatorIOS
   onCameraPressed = () => {
-    this.props.navigator.push({
+    this.props.navigator.pop({
       id: 'CameraView'
     })
   }
 
   onAnalyticsPressed = () => {
+    console.log(this.state.allMeasurements);
     this.props.navigator.push({
-      id: 'Analytics'
+      id: 'Analytics',
+      passProps: {
+        measurements: this.state.allMeasurements
+      }
     })
   }
 
@@ -220,7 +243,6 @@ class HomePage extends Component {
         size="large"
       />);
     } else {
-      console.log(this.state.dataSource)
 
     return (
       <View style={{flex: 1}}>
@@ -230,14 +252,14 @@ class HomePage extends Component {
           <Icon name='ios-camera-outline'
                 style={toolbarStyle.toolbarButton}
                 onPress = {this.onCameraPressed}
-                size = {25}/>
+                size = {30}/>
           </TouchableOpacity>
           <Text style={toolbarStyle.toolbarTitle}>Progress Pic Tracker</Text>
           <TouchableOpacity>
           <Icon name='ios-analytics-outline'
                 style={toolbarStyle.toolbarButton}
                 onPress = {this.onAnalyticsPressed}
-                size = {25}/>
+                size = {30}/>
           </TouchableOpacity>
         </View>
           <ListView

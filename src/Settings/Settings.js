@@ -26,7 +26,7 @@ class Settings extends Component {
 
 
   onBackPressed = () => {
-    this.props.navigator.push({
+    this.props.navigator.pop({
       id: 'CameraView'
     })
   }

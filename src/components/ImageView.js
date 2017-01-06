@@ -46,6 +46,7 @@ class ImageView extends Component {
       waist: 0,
       hip: 0,
       biceps: 0,
+      dateTaken: null
 
     };
 
@@ -65,8 +66,10 @@ class ImageView extends Component {
   }
 
   onChange = (value) => {
+    let loadedValue = value;
+    loadedValue["dateTaken"] = this.props.picPath.slice(-50).slice(0,10)
     this.setState({
-      value: value
+      value: loadedValue
     })
   }
 
@@ -97,9 +100,11 @@ class ImageView extends Component {
       .then(value => {
         console.log(value)
         if(value !== null) {
+          let loadedValue = JSON.parse(value)
           this.setState({
-            value: JSON.parse(value)
+            value: loadedValue
           })
+          console.log(loadedValue);
         }
       })
       .catch(error => console.error(error))
@@ -116,7 +121,7 @@ class ImageView extends Component {
   }
 
   goToCameraView (){
-    this.props.navigator.resetTo({
+    this.props.navigator.replacePreviousAndPop({
       id: 'HomePage'
     })
   }
