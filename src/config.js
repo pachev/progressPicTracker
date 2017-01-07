@@ -3,46 +3,40 @@
 const RNFS = require('react-native-fs');
 
 
-let options = {
-      width: 300,
-      height: 300,
-      color: '#2980B9',
-      margin: {
-        top: 20,
-        left: 45,
-        bottom: 25,
-        right: 20
-      },
-      axisX: {
-        showAxis: true,
-        showLabels: true,
-        showTicks: true,
-        zeroAxis: false,
-        orient: 'bottom',
-        label: {
-          fontFamily: 'Arial',
-          fontSize: 14,
-          fontWeight: true,
-          fill: '#34495E'
-        }
-      },
-      axisY: {
-        showAxis: true,
-        showLabels: true,
-        showTicks: true,
-        zeroAxis: false,
-        orient: 'left',
-        label: {
-          fontFamily: 'Arial',
-          fontSize: 14,
-          fontWeight: true,
-          fill: '#34495E'
-        }
-      }
+const settings = [
+    {item: "Weight", category: "Units", value: null},
+    {item: "Height", category: "Units", value: null},
+    {item: "Goal Weight", category: "Goals", value: null},
+    {item: "Goal Waist", category: "Goals", value: null},
+    {item: "Goal Bicep", category: "Goals", value: null},
+    {item: "Height", category: "Settings", value: null},
+    {item: "Gender & Age", category: "Settings", value: null},
+    {item: "Passcode", category: "Settings", value: null},
+    {item: "Backup", category: "Data", value: null},
+    {item: "Reset", category: "Data", value: null},
+];
+
+let convertArrayToMap = (list)=> {
+
+  var CategoryMap = {}; // Create the blank map
+  list.forEach((item) => {
+    if (!CategoryMap[item.category]) {
+      // Create an entry in the map for the category if it hasn't yet been created
+      CategoryMap[item.category] = []
     }
+    
+    CategoryMap[item.category].push(item);
+     
+  });
+  
+  return CategoryMap;
+  
+}
 
 module.exports = {
   'picPath': RNFS.DocumentDirectoryPath +'/progressPicTracker/pics',
   'graphPath': RNFS.DocumentDirectoryPath +'/progressPicTracker/graphs',
-  'chartOptions': options
+  'settings': settings,
+  'convertArrayToMap': convertArrayToMap
+
 }

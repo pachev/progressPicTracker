@@ -8,7 +8,7 @@ import {
 const toolbarStyle = StyleSheet.create({
     toolbar:{
         // backgroundColor:'#81c04d',
-        backgroundColor:'#203575',
+        backgroundColor:'#78909C',
         paddingTop:20,
         paddingBottom:10,
         flexDirection:'row'

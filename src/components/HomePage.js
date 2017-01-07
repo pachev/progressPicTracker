@@ -216,7 +216,7 @@ class HomePage extends Component {
         onPress = {() => this.goToImageView(rowData)}>
       <View style={styles.imageBox}>
         <Image style={styles.image} source={{uri: 'file://'+rowData}}/>
-        <Text >Weight: {weight}</Text>
+        <Text style={{padding: 8}}>Weight: {weight}</Text>
       </View>
       </TouchableHighlight>
 
@@ -230,10 +230,11 @@ class HomePage extends Component {
 
     return (
       <View style={styles.headerSection}>
-        <Text style={{color: 'white'}}>{sectionID}</Text>
+        <Text style={styles.text}>{sectionID}</Text>
       </View>
     );
   }
+
   render() {
     if (this.state.isLoading) {
       return (
@@ -243,6 +244,10 @@ class HomePage extends Component {
         size="large"
       />);
     } else {
+
+    if(this.state.dataSource._dataBlob === null)
+        console.log(this.state.dataSource._dataBlob)
+
 
     return (
       <View style={{flex: 1}}>
@@ -290,7 +295,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   text: {
-    color: '#8E8E8E',
+    marginLeft: 12,
+    fontSize: 16,
   },
   separator: {
     flex: 1,
@@ -305,10 +311,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   headerSection: {
+    flex: 1,
+    padding: 8,
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#c4c9d1'
+    backgroundColor: '#EAEAEA'
   },
    centering: {
     alignItems: 'center',

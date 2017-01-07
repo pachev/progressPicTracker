@@ -4,14 +4,16 @@ import {
   AppRegistry,
   Image,
   Button,
+  ListView,
   TouchableOpacity,
   Navigator,
   Dimensions,
   StatusBar,
   StyleSheet,
   Text,
-  View
-} from 'react-native';
+  View,
+  ActivityIndicatorIOS,
+} from 'react-native'
 
 //Camera Access
 import Camera from 'react-native-camera';
@@ -22,7 +24,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const RNFS = require('react-native-fs');
 const UUID = require('uuid/v1');
 
-const Modal = require('react-native-modalbox');
 
 const Config = require('./config');
 
@@ -40,7 +41,6 @@ class CameraView extends Component {
     this.camera = null;
 
     this.state = {
-      showSettings: false,
       camera: {
         aspect: Camera.constants.Aspect.fill,
         captureTarget: Camera.constants.CaptureTarget.temp,
@@ -123,18 +123,13 @@ class CameraView extends Component {
   //TODO: Figure out a way to have settings come from bottom
   onSettingsPressed = () => {
     console.log("Settings pressed")
-    this.setState({
-      showSettings: true
+    this.props.navigator.push({
+      id: 'Settings'
     })
   }
 
 
-  closeSetting =() => {
-    console.log("closeSetting");
-    this.setState ({
-    showSettings: false
-  })
-  }
+
 
 
   render() {
@@ -196,13 +191,6 @@ class CameraView extends Component {
               </TouchableOpacity>
           </View>
         </Camera>
-        <Modal style={styles.modal}
-          position={"center"}
-          isOpen={this.state.showSettings}
-          backdropContent={close}
-          >
-          <Text style={styles.text}>Where all the settings will go</Text>
-        </Modal>
       </View>
     );
   }
@@ -212,24 +200,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
-  btn: {
-    margin: 10,
-    backgroundColor: "#3B5998",
-    padding: 10
-  },
-  btnModal: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    width: 50,
-    height: 50,
-    backgroundColor: "transparent"
-  },
-  modal: {
+  headerSection: {
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 300,
-    width: 300
+    backgroundColor: '#c4c9d1'
   },
   backbutton: {
     backgroundColor: 'rgba(0,0,0,0)',
