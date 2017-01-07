@@ -4,16 +4,19 @@ const RNFS = require('react-native-fs');
 
 
 const settings = [
-    {item: "Weight", category: "Units", value: null},
-    {item: "Height", category: "Units", value: null},
-    {item: "Goal Weight", category: "Goals", value: null},
-    {item: "Goal Waist", category: "Goals", value: null},
-    {item: "Goal Bicep", category: "Goals", value: null},
-    {item: "Height", category: "Settings", value: null},
-    {item: "Gender & Age", category: "Settings", value: null},
-    {item: "Passcode", category: "Settings", value: null},
-    {item: "Backup", category: "Data", value: null},
-    {item: "Reset", category: "Data", value: null},
+    {item: "Weight", category: "UNITS", value: null},
+    {item: "Height", category: "UNITS", value: null},
+    {item: "Goal Weight", category: "GOALS", value: null},
+    {item: "Goal Waist", category: "GOALS", value: null},
+    {item: "Goal Bicep", category: "GOALS", value: null},
+    {item: "Height", category: "SETTINGS", value: null},
+    {item: "Gender & Age", category: "SETTINGS", value: null},
+    {item: "Passcode", category: "SETTINGS", value: null},
+    {item: "Backup", category: "DATA", value: null},
+    {item: "Reset", category: "DATA", value: null},
+    {item: "Send Feedback", category: "ABOUT", value: null},
+    {item: "Rate", category: "ABOUT", value: null},
+    {item: "Version", category: "ABOUT", value: null},
 ];
 
 let convertArrayToMap = (list)=> {

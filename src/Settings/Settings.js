@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import {
   AppRegistry,
+  Dimensions,
   Text,
   View,
   StatusBar,
@@ -21,6 +22,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import toolbarStyle from '../components/Styles';
 
 const RNFS = require('react-native-fs');
+const UUID = require('uuid/v4')
 
 const Config = require('../config');
 
@@ -35,7 +37,7 @@ class Settings extends Component {
       rowHasChanged: (r1, r2) => r1 !== r2,
       sectionHeaderHasChanged: (s1, s2) => s1 !==s2
     });
-    
+
     this.state = {
       dataSource: dataSource.cloneWithRowsAndSections(Config.convertArrayToMap(settingList)),
 
@@ -75,7 +77,10 @@ class Settings extends Component {
   }
 
   renderSeparator (sectionId, rowId) {
-      <View key={rowId} style={styles.separator} />
+    let newRow = rowId + UUID();
+    return (
+      <View key={newRow} style={styles.separator} />
+    )
   }
 
   render() {
@@ -110,11 +115,12 @@ const styles = StyleSheet.create({
   separator: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
+    width: Dimensions.get('window').width/1.2,
+    left: 20,
     backgroundColor: '#8E8E8E',
   },
   headerSection: {
     flex: 1,
-    height: 45,
     padding: 8,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -125,7 +131,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   container: {
-    flex: 1,
     padding: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',

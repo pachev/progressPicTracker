@@ -4,6 +4,7 @@ import {
   Dimensions
  } from 'react-native';
 
+ //color guide: https://material.io/guidelines/style/color.html#color-color-palette
 //refractor and export multiple styles
 const toolbarStyle = StyleSheet.create({
     toolbar:{
