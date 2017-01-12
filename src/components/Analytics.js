@@ -2,7 +2,9 @@ import React, {Component} from 'react';
 import {
   AppRegistry,
   Text,
+  Alert,
   View,
+  ActivityIndicator,
   StyleSheet,
   Dimensions,
   StatusBar,
@@ -25,7 +27,9 @@ import toolbarStyle from './Styles';
 const RNFS = require('react-native-fs');
 const Config = require('../config');
 
+import Graph from 'react-native-line-plot';
 
+const data = ["Weight", "Waist", "Hip", "Bicep"];
 
 class Analytics extends Component {
   constructor(props) {
@@ -36,35 +40,85 @@ class Analytics extends Component {
     });
 
     this.state = {
-      dataSource: dataSource,
-      data: {}
+      dataSource: dataSource.cloneWithRows(data),
+      measurements: props.measurements,
+      data: [],
+      yUnit: 'weight',
+      isLoading: true,
 
     }
   }
 
   componentDidMount() {
-    this.fetchData();
+    this.fetchData('weight');
 
   }
 
-  fetchData () {
-    const data = ["Weight", "Waist", "Hip", "Bicep", "All"];
-    let measurements = this.props.measurements;
-    let stateData = {};
+  fetchData (value) {
+    this.setState({
+      isLoading: true
+    });
+
+    let measurements = this.state.measurements,
+        stateData =[],
+        sameItemCheck =[],
+        date,
+        attribute,
+        pair = [];
 
     for (i in measurements) {
+      pair = [];
+      date = new Date(measurements[i].dateTaken);
 
-      console.log(measurements[i].weight);
+      //TODO: find a more efficent way of doing this
+      switch (value.toLowerCase()) {
+        case 'bicep':
+          attribute = measurements[i].biceps;
+          console.log("bicep", attribute);
+          break;
+        case 'hip':
+          attribute = measurements[i].hip;
+          console.log("hip", attribute);
+          break;
+        case 'waist':
+          attribute = measurements[i].waist;
+          console.log("waist", attribute);
+          break;
+        default:
+          attribute = measurements[i].weight;
+          console.log("weight", attribute);
+      }
+
+      pair.push(date.getTime());
+      pair.push(attribute);
+      sameItemCheck.push(attribute)
+
+      stateData.push(pair)
     }
-    this.setState ({
-      dataSource: this.state.dataSource.cloneWithRows(data)
-    })
+    if(this.validateData(sameItemCheck)){
+      Alert.alert("Insufficient Datta", "Insufficient data to render this graph");
+    }else{
+      this.setState ({
+        data: stateData,
+        yUnit: value,
+        isLoading: false
+      });
 
+    }
+
+  }
+
+  validateData(array) {
+    const first = array[0];
+
+    return array.every(function(element) {
+      return element === first;
+    });
   }
 
 
   onBackPressed = () => {
-    this.props.navigator.replacePreviousAndPop({
+    this.props.navigator.pop({
       id: 'HomePage'
     })
   }
@@ -72,7 +126,7 @@ class Analytics extends Component {
   renderRow (rowData) {
     return (
       <TouchableOpacity
-        onPress={()=> console.log("{rowData} was pressed")}
+        onPress={()=> this.fetchData(rowData)}
         >
         <View style={styles.container2}>
           <Text style={styles.text}>
@@ -84,6 +138,8 @@ class Analytics extends Component {
   }
 
   render() {
+    if(this.state.isLoading){
+
     return (
       <View style={{flex: 1}}>
         <StatusBar animated hidden/>
@@ -97,6 +153,11 @@ class Analytics extends Component {
           <Text style={toolbarStyle.toolbarTitle}>Analytics</Text>
         </View>
         <View style={styles.chart}>
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+          />
         </View>
         <ListView
           style={styles.container}
@@ -106,6 +167,44 @@ class Analytics extends Component {
           />
       </View>
     )
+    }else {
+
+      return (
+        <View style={{flex: 1}}>
+          <StatusBar animated hidden/>
+          <View style={toolbarStyle.toolbar}>
+            <TouchableOpacity>
+              <Icon name='ios-arrow-back'
+                style={toolbarStyle.toolbarButton}
+                onPress = {this.onBackPressed}
+                size = {25}/>
+            </TouchableOpacity>
+            <Text style={toolbarStyle.toolbarTitle}>Analytics</Text>
+          </View>
+          <View style={styles.chart}>
+            <Graph
+              data={this.state.data}
+              graphColorPrimary='#000000'
+              graphWidth={Dimensions.get('window').width/1.3}
+              graphHeight={Dimensions.get('window').height/2.5}
+              graphColorSecondary='black'
+              graphWidthSecondary='2'
+              graphWidthPrimary='2'
+              xUnit='date'
+              yUnit={this.state.yUnit}
+              yAxisDensity= {5}
+              />
+          </View>
+          <ListView
+            style={styles.container}
+            dataSource={this.state.dataSource}
+            renderRow= {this.renderRow.bind(this)}
+            renderSeparator={(sectionId, rowId) => <View key= {rowId} style={styles.separator}/>}
+            />
+        </View>
+      )
+    }
+
   }
 }
 
@@ -128,7 +227,6 @@ const styles = StyleSheet.create({
     chart: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height/2.2,
-        backgroundColor: "rgb(249, 251, 255)",
         padding: 20
     },
     separator: {

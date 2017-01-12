@@ -11,6 +11,7 @@ import {
 const CameraView = require('./src/CameraView').default
 const HomePage = require('./src/components/HomePage').default
 const Settings = require('./src/Settings/Settings').default
+const SubSettings = require('./src/Settings/SubSettings').default
 const Analytics = require('./src/components/Analytics').default
 const PausedPicture = require('./src/components/PausedPicture').default
 const ImageView = require('./src/components/ImageView').default
@@ -75,6 +76,8 @@ class progressPicTracker extends Component {
         return(<PausedPicture navigator = {navigator} {...route.passProps} title = 'PausedPicture' />)
       case 'ImageView':
         return(<ImageView navigator = {navigator} {...route.passProps} title = 'ImageView' />)
+      case 'SubSettings':
+        return(<SubSettings navigator = {navigator} {...route.passProps} />)
     }
   }
 }

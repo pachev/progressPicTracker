@@ -31,7 +31,7 @@ const Config = require('./config');
 const path = Config.picPath;
 
 
-//TODO: Add a method of asking and retrieving user's weight
+//TODO: refractor toolbar as seperate component to be called
 
 
 class CameraView extends Component {
@@ -133,13 +133,6 @@ class CameraView extends Component {
 
 
   render() {
-    const close = <TouchableOpacity
-      onPress={() => this.closeSetting()}
-      style={[styles.btn, styles.btnModal]}>
-      <Text style={{color: 'white', fontWeight:'bold', fontSize: 23}}>
-        X
-      </Text>
-    </TouchableOpacity>
 
     return (
       <View style={styles.container}>

@@ -3,11 +3,13 @@ import React, {Component} from 'react';
 import {
   AppRegistry,
   Dimensions,
+  ActivityIndicator,
   Text,
   View,
   StatusBar,
   StyleSheet,
   Navigator,
+  AsyncStorage,
   TouchableOpacity,
   TouchableHighlight,
   ListView,
@@ -26,7 +28,7 @@ const UUID = require('uuid/v4')
 
 const Config = require('../config');
 
-const settingList = Config.settings;
+const defaultSettingList = Config.settings;
 
 
 class Settings extends Component {
@@ -39,9 +41,71 @@ class Settings extends Component {
     });
 
     this.state = {
-      dataSource: dataSource.cloneWithRowsAndSections(Config.convertArrayToMap(settingList)),
+      dataSource: dataSource,
+      isLoading: true
 
     }
+  }
+
+  componentDidMount() {
+    this.fetchSettings()
+  }
+
+  componentWillReceiveProps() {
+    //This function is called as the scene is rendered
+    console.log("Inside componentWillReceiveProps");
+    this.fetchSettings()
+  }
+
+
+  fetchSettings () {
+    let settingList = [],
+        retrievalKeys = [],
+        dataSource = null;
+
+    defaultSettingList.map((setting) => {
+      retrievalKeys.push("settings-"+setting.item)
+    });
+
+    console.log("retrieval keys",retrievalKeys);
+
+    AsyncStorage.multiGet(retrievalKeys, (err, stores) => {
+      stores.map( (result, i, store) => {
+        let key = store[i][0];
+        let val = store[i][1];
+
+        if(val!== null) {
+          settingList.push(JSON.parse(val));
+        }else{
+          settingList.push(defaultSettingList[i]);
+        }
+      })
+
+
+      dataSource = this.convertArrayToMap(settingList);
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRowsAndSections(dataSource),
+        isLoading: false,
+      })
+
+    }) //end of async
+
+  }
+
+  convertArrayToMap (list) {
+    var CategoryMap = {}; // Create the blank map
+    list.forEach((item) => {
+      if (!CategoryMap[item.category]) {
+        // Create an entry in the map for the category if it hasn't yet been created
+        CategoryMap[item.category] = []
+      }
+
+      CategoryMap[item.category].push(item);
+
+    });
+
+    console.log("whole thing", CategoryMap);
+    return CategoryMap;
   }
 
 
@@ -51,11 +115,26 @@ class Settings extends Component {
     })
   }
 
+  onItemPressed  (data) {
+    console.log("data", data);
+    this.props.navigator.push({
+      id: 'SubSettings',
+      passProps: {
+        data: data
+      },
+      title: data.item
+    })
+  }
+
   renderRow (rowData) {
       return (
-          <TouchableHighlight >
+          <TouchableHighlight
+            onPress={() => this.onItemPressed(rowData)}
+            underlayColor='#ddd'
+            >
               <View style={styles.container}>
               <Text> {rowData.item}</Text>
+              <Text style={styles.value}> {rowData.value}</Text>
               <View>
                   <Icon name='ios-arrow-forward'
                       style= {styles.frontButton}
@@ -84,31 +163,42 @@ class Settings extends Component {
   }
 
   render() {
-    return (
-      <View>
-        <StatusBar animated hidden/>
-        <View style={toolbarStyle.toolbar}>
-          <TouchableOpacity>
-          <Icon name='ios-arrow-back'
-                style={toolbarStyle.toolbarButton}
-                onPress = {this.onBackPressed}
-                size = {25}/>
-          </TouchableOpacity>
-          <Text style={toolbarStyle.toolbarTitle}>Settings</Text>
-        </View>
+    if (this.state.isLoading) {
+      console.log("it's loading");
+      return (
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+          />);
+        } else {
+
+          return (
+            <View>
+              <StatusBar animated hidden/>
+              <View style={toolbarStyle.toolbar}>
+                <TouchableOpacity>
+                  <Icon name='ios-arrow-back'
+                    style={toolbarStyle.toolbarButton}
+                    onPress = {this.onBackPressed}
+                    size = {25}/>
+                </TouchableOpacity>
+                <Text style={toolbarStyle.toolbarTitle}>Settings</Text>
+              </View>
 
               <ListView
-                  dataSource={this.state.dataSource}
-                  renderRow={this.renderRow.bind(this)}
-                  renderSectionHeader={this.renderSectionHeader.bind(this)}
-                  renderSeparator={this.renderSeparator.bind(this)}
-              />
+                dataSource={this.state.dataSource}
+                renderRow={this.renderRow.bind(this)}
+                renderSectionHeader={this.renderSectionHeader.bind(this)}
+                renderSeparator={this.renderSeparator.bind(this)}
+                />
 
-      </View>
-    )
-  }
+            </View>
+          )
+        }
+      }
 
-}
+    }
 
 const styles = StyleSheet.create({
 
@@ -139,6 +229,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
 
   },
+  centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  value: {
+    color: 'grey',
+    fontFamily: 'Cochin',
+    fontSize: 11,
+    left: 90,
+    fontStyle: 'italic',
+    textAlign: 'auto',
+
+  }
 });
 
 export default Settings;
