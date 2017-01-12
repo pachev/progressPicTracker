@@ -48,6 +48,7 @@ class CameraView extends Component {
         orientation: Camera.constants.Orientation.auto,
         flashMode: Camera.constants.FlashMode.auto,
       },
+      flashIcon: 'ios-flash-outline'
     };
   }
 
@@ -93,16 +94,22 @@ class CameraView extends Component {
   }
 
   //TODO: Ipmplement change of  icons
-  fllashToggle = () => {
-    let newFlashMode;
+  flashToggle = () => {
+    let newFlashMode,
+        newFlashIcon;
+
+    console.log("inside fllashToggle");
     const { auto, on, off } = Camera.constants.FlashMode;
 
     if (this.state.camera.flashMode === auto) {
       newFlashMode = on;
+      newFlashIcon = 'ios-flash';
     } else if (this.state.camera.flashMode === on) {
       newFlashMode = off;
+      newFlashIcon = 'ios-flash-outline';
     } else if (this.state.camera.flashMode === off) {
       newFlashMode = auto;
+      newFlashIcon = 'ios-at-outline';
     }
 
     this.setState({
@@ -110,7 +117,11 @@ class CameraView extends Component {
         ...this.state.camera,
         flashMode: newFlashMode,
       },
+      flashIcon: newFlashIcon
     });
+
+    console.log("currentState: ", this.state.flashIcon);
+    console.log("setSate: ", newFlashIcon);
   }
 
   onBackPressed = () => {
@@ -177,9 +188,9 @@ class CameraView extends Component {
                 style= {styles.camera} size={60} />
               </TouchableOpacity>
               <TouchableOpacity>
-              <Icon name='ios-flash-outline'
+              <Icon name={this.state.flashIcon}
                 style= {styles.analytics}
-                onPress={this.flashOn}
+                onPress={this.flashToggle}
                 size={30}/>
               </TouchableOpacity>
           </View>

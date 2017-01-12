@@ -96,7 +96,7 @@ class Analytics extends Component {
       stateData.push(pair)
     }
     if(this.validateData(sameItemCheck)){
-      Alert.alert("Insufficient Datta", "Insufficient data to render this graph");
+      Alert.alert("Insufficient Data", "Insuficient data to render this graph");
     }else{
       this.setState ({
         data: stateData,

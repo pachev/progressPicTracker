@@ -261,7 +261,7 @@ class HomePage extends Component {
           </TouchableOpacity>
           <Text style={toolbarStyle.toolbarTitle}>Progress Pic Tracker</Text>
           <TouchableOpacity>
-          <Icon name='ios-analytics-outline'
+          <Icon name='ios-stats-outline'
                 style={toolbarStyle.toolbarButton}
                 onPress = {this.onAnalyticsPressed}
                 size = {30}/>
