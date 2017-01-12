@@ -146,7 +146,6 @@ class HomePage extends Component {
             }else{
               allWeights[key] = 0;
               allMeasurements[key] = 0;
-              datesTaken[key] = 0;
             }
           });
           this.setState({
@@ -160,6 +159,7 @@ class HomePage extends Component {
                                             sectionIds, rowIds),
           allWeights: allWeights,
           allMeasurements: allMeasurements,
+          dates: datesTaken,
         })
 
       })
@@ -193,11 +193,12 @@ class HomePage extends Component {
     })
   }
 
-  goToImageView (path) {
+  goToImageView (path,date) {
     this.props.navigator.push({
       id: 'ImageView',
       passProps: {
-        picPath: path
+        picPath: path,
+        dateTaken: date
       }
     })
 
@@ -209,11 +210,12 @@ class HomePage extends Component {
 
     const key = rowData.slice(-40).slice(0,-4);
     const weight = this.state.allWeights[key]
+    const date = this.state.dates[key]
 
 
     return (
       <TouchableHighlight
-        onPress = {() => this.goToImageView(rowData)}>
+        onPress = {() => this.goToImageView(rowData, date)}>
       <View style={styles.imageBox}>
         <Image style={styles.image} source={{uri: 'file://'+rowData}}/>
         <Text style={{padding: 8}}>Weight: {weight}</Text>

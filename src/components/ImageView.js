@@ -46,7 +46,7 @@ class ImageView extends Component {
       waist: 0,
       hip: 0,
       biceps: 0,
-      dateTaken: null
+      dateTaken: props.dateTaken
 
     };
 
@@ -62,12 +62,14 @@ class ImageView extends Component {
   componentDidMount() {
     //This function is called as the scene is rendered
     //http://stackoverflow.com/questions/34393109/
-    this.loadMeasurements()
+    this.loadMeasurements();
   }
 
   onChange = (value) => {
     let loadedValue = value;
-    loadedValue["dateTaken"] = this.props.picPath.slice(-50).slice(0,10)
+    loadedValue["dateTaken"] = this.props.dateTaken
+    console.log("loadedValue:", loadedValue);
+
     this.setState({
       value: loadedValue
     })

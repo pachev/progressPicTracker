@@ -68,7 +68,7 @@ class Analytics extends Component {
 
     for (i in measurements) {
       pair = [];
-      date = new Date(measurements[i].dateTaken);
+      date = measurements[i].dateTaken;
 
       //TODO: find a more efficent way of doing this
       switch (value.toLowerCase()) {
@@ -89,7 +89,7 @@ class Analytics extends Component {
           console.log("weight", attribute);
       }
 
-      pair.push(date.getTime());
+      pair.push(date);
       pair.push(attribute);
       sameItemCheck.push(attribute)
 

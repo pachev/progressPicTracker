@@ -31,10 +31,13 @@ class PausedPicture extends Component {
 
   }
   goToImageView (path) {
+
+    const date = Date.now();
     this.props.navigator.push({
       id: 'ImageView',
       passProps: {
-        picPath: path
+        picPath: path,
+        dateTaken: date
       }
     })
 
