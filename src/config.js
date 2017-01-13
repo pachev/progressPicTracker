@@ -5,9 +5,10 @@ const RNFS = require('react-native-fs');
 const SettingType = {
   SELECTION: 0,
   NUMBER: 1,
-  BUTTON: 2,
+  EMAIL: 2,
   SWITCH: 3,
   DISPLAY: 4,
+  RATE: 5,
 }
 
 const settings = [
@@ -27,16 +28,17 @@ const settings = [
   value: "Male", options: ["Male", "Female"], type: SettingType.SELECTION},
 {item: "Age", category: "SETTINGS",
   value: 0, options: ["amount"], type: SettingType.NUMBER},
-{item: "Passcode", category: "SETTINGS",
-  value: null, options: [], type: SettingType.SWITCH},
-{item: "Backup", category: "DATA",
-  value: null, options: ["Email data", "Google Drive"], type: SettingType.BUTTON},
-{item: "Reset", category: "DATA",
-  value: null, options: ["Reset All"], type: SettingType.BUTTON},
+  //For later implementation
+// {item: "Passcode", category: "SETTINGS",
+//   value: null, options: [], type: SettingType.SWITCH},
+// {item: "Backup", category: "DATA",
+//   value: null, options: ["Email data", "Google Drive"], type: SettingType.BUTTON},
+// {item: "Reset", category: "DATA",
+//   value: null, options: ["Reset All"], type: SettingType.BUTTON},
 {item: "Send Feedback", category: "ABOUT",
-  value: null, options: ["Email Me"], type: SettingType.BUTTON},
+  value: null, options: ["Email Me"], type: SettingType.EMAIL},
 {item: "Rate", category: "ABOUT",
-  value: null, options: ["Rate this app"], type: SettingType.BUTTON},
+  value: null, options: ["Rate this app"], type: SettingType.RATE},
 {item: "Version", category: "ABOUT",
   value: null, options: ["0.0.1"], type: SettingType.DISPLAY},
 ];

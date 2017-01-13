@@ -53,7 +53,6 @@ class Settings extends Component {
 
   componentWillReceiveProps() {
     //This function is called as the scene is rendered
-    console.log("Inside componentWillReceiveProps");
     this.fetchSettings()
   }
 
@@ -64,10 +63,9 @@ class Settings extends Component {
         dataSource = null;
 
     defaultSettingList.map((setting) => {
-      retrievalKeys.push("settings-"+setting.item)
+      retrievalKeys.push(setting.category+"-"+setting.item)
     });
 
-    console.log("retrieval keys",retrievalKeys);
 
     AsyncStorage.multiGet(retrievalKeys, (err, stores) => {
       stores.map( (result, i, store) => {
@@ -104,7 +102,6 @@ class Settings extends Component {
 
     });
 
-    console.log("whole thing", CategoryMap);
     return CategoryMap;
   }
 
@@ -116,7 +113,6 @@ class Settings extends Component {
   }
 
   onItemPressed  (data) {
-    console.log("data", data);
     this.props.navigator.push({
       id: 'SubSettings',
       passProps: {
@@ -126,6 +122,11 @@ class Settings extends Component {
     })
   }
 
+  renderPreview(setting) {
+    return (setting.item);
+
+  }
+
   renderRow (rowData) {
       return (
           <TouchableHighlight
@@ -133,7 +134,7 @@ class Settings extends Component {
             underlayColor='#ddd'
             >
               <View style={styles.container}>
-              <Text> {rowData.item}</Text>
+              <Text> {this.renderPreview(rowData)}</Text>
               <Text style={styles.value}> {rowData.value}</Text>
               <View>
                   <Icon name='ios-arrow-forward'
@@ -164,7 +165,6 @@ class Settings extends Component {
 
   render() {
     if (this.state.isLoading) {
-      console.log("it's loading");
       return (
         <ActivityIndicator
           animating={true}

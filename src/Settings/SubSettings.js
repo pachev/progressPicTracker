@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import {
   Dimensions,
+  Alert,
   AsyncStorage,
   TouchableOpacity,
   TouchableHighlight,
@@ -14,6 +15,7 @@ import {
 } from 'react-native';
 import toolbarStyle from '../components/Styles';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Communications from 'react-native-communications';
 
 //For forms
 const TFORM = require('tcomb-form-native');
@@ -43,7 +45,8 @@ class SubSettings extends Component {
       dataSource : dataSource.cloneWithRows(props.data.options),
       data: this.props.data,
       amount: amount,
-      key: "settings-"+props.data.item
+      key: props.data.category+"-"+props.data.item,
+      selection: props.data.value
 
     }
 
@@ -57,7 +60,6 @@ class SubSettings extends Component {
   }
 
   onPressNumber = () => {
-    console.log(this.state.value);
     this.saveNumberValue();
   }
 
@@ -71,6 +73,39 @@ class SubSettings extends Component {
     this.onBackPressed();
 
   }
+
+  saveSelection (value) {
+
+    let data = this.state.data;
+    data.value = value
+    AsyncStorage.setItem(this.state.key, JSON.stringify(data))
+    .then(value => console.log("Success Saving Measurements"))
+    .catch(err => console.error(err))
+
+  }
+
+  onPressSelection = (value) => {
+    this.setState({
+      selection: value,
+      dataSource : new ListView.DataSource({
+        rowHasChanged: (r1, r2) => r1 !== r2
+      }).cloneWithRows(this.props.data.options)
+    });
+
+    this.saveSelection(value);
+
+  }
+
+  emailMe = ()=> {
+    Communications.email(
+      ['pachevjoseph@gmail.com'],
+      null,
+      null,
+      'Progress Pic Tracker Feedback',
+      "This is my feedback for your app: "
+    );
+  }
+
 
   renderSeparator (sectionId, rowId) {
     let newRow = rowId + UUID();
@@ -102,11 +137,60 @@ class SubSettings extends Component {
                 </TouchableHighlight>
               </View>
           );
-
         break;
+      case Config.SettingType.SELECTION:
+      if(rowData  ===  this.state.selection){
+        return(
+          <TouchableHighlight
+            underlayColor='#ddd'
+            onPress={()=>this.onPressSelection(rowData)}
+            >
+            <View style={styles.container}>
+              <Text>
+                {rowData}
+              </Text>
+              <View>
+                <Icon name='ios-checkmark-circle-outline'
+                  style={{textAlign:'center', color:'green'}}
+                  size = {20}/>
+              </View>
+            </View>
+          </TouchableHighlight>
+        );
+      }else{
+        return(
+          <TouchableHighlight
+            underlayColor='#ddd'
+            onPress={()=>this.onPressSelection(rowData)}
+            >
+            <View style={styles.container}>
+              <Text>
+                {rowData}
+              </Text>
+            </View>
+          </TouchableHighlight>
+        );
+      }
+      break;
+    case Config.SettingType.EMAIL:
+        return(
+          <TouchableHighlight
+            underlayColor='#ddd'
+            onPress={()=>this.emailMe()}
+            >
+            <View style={styles.container}>
+              <Text>
+                {rowData}
+              </Text>
+            </View>
+          </TouchableHighlight>
+        );
+      break;
       default:
         return(
-          <TouchableHighlight>
+          <TouchableHighlight
+            onPress={()=> Alert.alert("Thank you for using this app")}
+            >
             <View style={styles.container}>
               <Text>
                 {rowData}
