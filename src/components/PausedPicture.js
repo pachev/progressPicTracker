@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {
   Image,
   Dimensions,
+  AsyncStorage,
   TouchableOpacity,
   StatusBar,
   StyleSheet,
@@ -26,11 +27,44 @@ class PausedPicture extends Component {
     super(props);
 
     this.state = {
-      picPath : props.picPath
+      picPath : props.picPath,
+      firstProgress: false
     }
 
   }
+
+  componentDidMount() {
+    this.loadProgression();
+
+  }
+
+  loadProgression () {
+    AsyncStorage.getItem(Config.firstProgressKey)
+    .then(value => {
+      if(value !== null){
+          this.setState({
+            firstProgress: true
+          })
+      }else{
+        this.setState({firstProgress: false})
+      }
+    })
+    .catch(err => console.error(err))
+
+  }
+
+
   goToImageView (path) {
+
+    if(!this.state.firstProgress) {
+      AsyncStorage.setItem(Config.firstProgressKey,  path )
+      .then(()=> console.log("success saving first progress"))
+      .catch(err => console.error("erro saving first progress"))
+    }else{
+      AsyncStorage.setItem(Config.currentProgressKey, path )
+      .then(()=> console.log("success saving current progress"))
+      .catch(err => console.error("erro saving last progress"))
+    }
 
     const date = Date.now();
     this.props.navigator.push({
@@ -59,6 +93,8 @@ class PausedPicture extends Component {
     .then(data => console.log('successfully copied file'))
     .then(this.goToImageView(newPath))
     .catch(err => console.error(err));
+
+
 
     //Debug purposes only
     console.log("=============Current Directory==============")

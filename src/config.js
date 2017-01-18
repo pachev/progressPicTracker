@@ -65,6 +65,8 @@ module.exports = {
   'graphPath': RNFS.DocumentDirectoryPath +'/progressPicTracker/graphs',
   'settings': settings,
   'convertArrayToMap': convertArrayToMap,
-  'SettingType': SettingType
+  'SettingType': SettingType,
+  'firstProgressKey': 'First-Progress-Key',
+  'currentProgressKey': 'Current-Progress-Key',
 
 }

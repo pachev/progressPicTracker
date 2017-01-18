@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
+  AsyncStorage,
+  ActivityIndicator,
   Image,
   Button,
   ListView,
@@ -18,6 +20,7 @@ import {
 //Camera Access
 import Camera from 'react-native-camera';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FlashIcon from 'react-native-vector-icons/MaterialIcons';
 
 
 //File System and unique number generator
@@ -30,6 +33,8 @@ const Config = require('./config');
 //Main Paths
 const path = Config.picPath;
 
+
+const Modal = require('react-native-modalbox')
 
 //TODO: refractor toolbar as seperate component to be called
 
@@ -48,7 +53,12 @@ class CameraView extends Component {
         orientation: Camera.constants.Orientation.auto,
         flashMode: Camera.constants.FlashMode.auto,
       },
-      flashIcon: 'ios-flash-outline'
+      flashIcon: 'flash-off',
+      cameraIcon: 'camera-front',
+      isOpen: false,
+      modalLoading: false,
+      firstProgress: null,
+      currentProgress: null
     };
   }
 
@@ -75,13 +85,17 @@ class CameraView extends Component {
   }
 
   flipCamera = () => {
-    let newType;
+    let newType,
+        cameraIcon;
     const { back, front } = Camera.constants.Type;
 
     if (this.state.camera.type === back) {
       newType = front;
+      cameraIcon = 'camera-rear'
+
     } else if (this.state.camera.type === front) {
       newType = back;
+      cameraIcon = 'camera-front'
     }
 
     this.setState({
@@ -89,6 +103,7 @@ class CameraView extends Component {
         ...this.state.camera,
         type: newType,
       },
+      cameraIcon: cameraIcon
     });
 
   }
@@ -103,13 +118,13 @@ class CameraView extends Component {
 
     if (this.state.camera.flashMode === auto) {
       newFlashMode = on;
-      newFlashIcon = 'ios-flash';
+      newFlashIcon = 'flash-on';
     } else if (this.state.camera.flashMode === on) {
       newFlashMode = off;
-      newFlashIcon = 'ios-flash-outline';
+      newFlashIcon = 'flash-off';
     } else if (this.state.camera.flashMode === off) {
       newFlashMode = auto;
-      newFlashIcon = 'ios-at-outline';
+      newFlashIcon = 'flash-auto';
     }
 
     this.setState({
@@ -139,12 +154,97 @@ class CameraView extends Component {
     })
   }
 
+  showProgress = () => {
+    const first = Config.firstProgressKey;
+    const current = Config.currentProgressKey;
+    console.log("Shwoing Progress");
+    this.setState({
+      isOpen: true,
+      modalLoading: true
+    })
+
+    AsyncStorage.multiGet([first, current], (err, stores) => {
+      let firstPath = stores[0][1];
+      let secondPath = stores[1][1];
+
+      this.setState({
+        firstProgress: firstPath,
+        currentProgress: secondPath,
+        modalLoading: false
+      });
+
+      console.log("firstPath:", firstPath);
+      console.log("secondPath:", secondPath);
+    })
+  }
+
+  closeProgress = () => {
+    console.log("Shwoing Progress");
+    this.setState({
+      isOpen: false
+    })
+  }
+
 
 
 
 
   render() {
+    let BottomModal = null;
 
+    const xClose= <View
+                    style={[styles.button, styles.buttonModal]}
+                    >
+                    <Button
+                    onPress= {this.closeProgress}
+                    color="white"
+                    title="X"
+                    />
+                </View>;
+
+                if(this.state.modalLoading) {
+                  BottomModal=
+                  <Modal
+                    isOpen={this.state.isOpen}
+                    onClosed={()=>this.setState({isOpen:false})}
+                    position={"center"}
+                    backdropContent={xClose}
+                    style={styles.modal}
+                    >
+                    <ActivityIndicator
+                      animating={true}
+                      style={[styles.centering, {height: 80}]}
+                      size="large"
+                      />
+                  </Modal>
+                }else {
+
+
+                  BottomModal =
+                  <Modal
+                    isOpen={this.state.isOpen}
+                    onClosed={()=>this.setState({isOpen:false})}
+                    position={"center"}
+                    backdropContent={xClose}
+                    style={styles.modal}
+                    >
+                    <View style={{flex:1, flexDirection: 'row'}}>
+                      <View style={{alignItems: 'center'}}>
+                        <Text style={{color: 'white'}}>
+                          Before:
+                        </Text>
+                        <Image style={styles.image} source={{uri: 'file://'+this.state.firstProgress}}/>
+                      </View>
+                      <View style={styles.separator}/>
+                      <View style={{alignItems: 'center'}}>
+                        <Text style={{color: 'white'}}>
+                          After:
+                        </Text>
+                        <Image style={styles.image} source={{uri: 'file://'+this.state.currentProgress}}/>
+                      </View>
+                    </View>
+                  </Modal>
+                }
     return (
       <View style={styles.container}>
         <StatusBar animated hidden/>
@@ -161,15 +261,24 @@ class CameraView extends Component {
           mirrorImage={false}
         >
           <View style={styles.toolbar}>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress = {this.onBackPressed}
+                >
               <Icon name='ios-arrow-back'
                 style= {styles.backbutton}
-                onPress = {this.onBackPressed}
                 size={30} />
               </TouchableOpacity>
-              <TouchableOpacity>
-              <Icon name='ios-settings'
+              <TouchableOpacity
+                onPress = {this.showProgress}
+                >
+              <Icon name='ios-body-outline'
+                style= {{color:'white', right:130}}
+                size={30} />
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress = {this.onSettingsPressed}
+                >
+              <Icon name='ios-settings'
                 style= {styles.settings}
                 size={30} />
               </TouchableOpacity>
@@ -178,7 +287,7 @@ class CameraView extends Component {
           <View style={styles.footer}>
 
               <TouchableOpacity>
-              <Icon name='ios-reverse-camera-outline'
+              <FlashIcon name={this.state.cameraIcon}
                 onPress={this.flipCamera}
                 style= {styles.flip} size={30} />
               </TouchableOpacity>
@@ -188,13 +297,14 @@ class CameraView extends Component {
                 style= {styles.camera} size={60} />
               </TouchableOpacity>
               <TouchableOpacity>
-              <Icon name={this.state.flashIcon}
+              <FlashIcon name={this.state.flashIcon}
                 style= {styles.analytics}
                 onPress={this.flashToggle}
                 size={30}/>
               </TouchableOpacity>
           </View>
         </Camera>
+        {BottomModal}
       </View>
     );
   }
@@ -237,14 +347,14 @@ const styles = StyleSheet.create({
   flip: {
     marginLeft: -30,
     top: 10,
-    right: 30,
+    right: 60,
     backgroundColor: 'rgba(0,0,0,0)',
     color: 'white'
   },
   analytics: {
     marginLeft: -30,
     top: 10,
-    left: 60,
+    left: 90,
     backgroundColor: 'rgba(0,0,0,0)',
     color: 'white'
   },
@@ -252,12 +362,42 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
     color: 'white',
   },
+  modal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    height: 400,
+  },
+  button: {
+    margin: 10,
+    backgroundColor: '#3b5998',
+    padding: 10,
+  },
+  buttonModal: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 50,
+    height: 50,
+    backgroundColor: 'transparent',
+  },
   preview: {
     flex: 1,
     justifyContent: 'space-between',
     height: Dimensions.get('window').height,
     width: Dimensions.get('window').width
-  }
+  },
+  image: {
+    padding: 5,
+    width: 170,
+    height: 320,
+  },
+  separator: {
+    padding: 1,
+    backgroundColor: 'grey',
+    height: 260,
+    width: StyleSheet.hairlineWidth,
+  },
 });
 
 export default CameraView;

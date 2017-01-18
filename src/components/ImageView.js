@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import {
   Image,
   Dimensions,
+  ActivityIndicator,
   ScrollView,
   NumberInput,
   AsyncStorage,
@@ -54,6 +55,9 @@ class ImageView extends Component {
       picPath : props.picPath,
       key: props.picPath.slice(-40).slice(0,-4),
       value: measurements,
+      isLoading: true,
+      lastTwo: null,
+      firstTwo: null,
 
     }
 
@@ -88,16 +92,38 @@ class ImageView extends Component {
     RNFS.unlink(this.state.picPath)
     .then(() => {
       console.log('FILE DELETED');
-      this.goToCameraView();
     })
     .catch((err) => {
       console.log(err.message);
     });
 
+    console.log("firstTwo", this.state.firstTwo);
+
+    if(this.state.picPath === this.state.lastTwo[1]) {
+      console.log("paths match");
+      AsyncStorage.setItem(Config.currentProgressKey, this.state.lastTwo[0])
+      .then(()=> {
+        console.log("success replacing current")
+        this.goToCameraView()
+      })
+      .catch(err => console.error(err))
+    }else if (this.state.picPath === this.state.firstTwo[0]){
+      console.log('first path matches');
+      AsyncStorage.setItem(Config.firstProgressKey, this.state.firstTwo[1])
+      .then(()=> {
+        console.log("success replacing first")
+        this.goToCameraView();
+      })
+      .catch(err => console.error(err))
+      this.goToCameraView();
+    }else{
+      this.goToCameraView();
+    }
+
+
   }
 
   loadMeasurements () {
-
       AsyncStorage.getItem(this.state.key)
       .then(value => {
         console.log(value)
@@ -111,14 +137,51 @@ class ImageView extends Component {
       })
       .catch(error => console.error(error))
 
+
+    RNFS.readDir(mainPicPath).then(mainResults => {
+      let lastTwo = [],
+          firstTwo = [];
+
+      let results = mainResults.filter((file) => {
+        return file.name.split('.').pop() === 'jpg';
+      });
+
+      console.log("results", results);
+
+      if(results.length > 1 ) {
+        results.slice(-2).map((file)=> {
+          lastTwo.push(file.path)
+        });
+        results.slice(0,2).map((file)=> {
+          firstTwo.push(file.path)
+        });
+        this.setState({
+          lastTwo: lastTwo,
+          firstTwo: firstTwo,
+          isLoading: false,
+        })
+      }else {
+        this.setState({
+          lastTwo: [null,results[0]],
+          firstTwo: [results[0],null],
+          isLoading: false
+        })
+
+      }
+
+    })
+    .catch(err => console.error(err));
+
+
+
   }
 
   saveMeasurements () {
     AsyncStorage.setItem(this.state.key, JSON.stringify(this.state.value))
     .then(value => console.log("Success Saving Measurements"))
+    .then(this.goToCameraView())
     .catch(err => console.error(err))
 
-    this.goToCameraView();
 
   }
 
@@ -129,29 +192,39 @@ class ImageView extends Component {
   }
 
   render () {
-    return (
-      <ScrollView style = {styles.container}>
-        <Image style={styles.image} source={{uri: 'file://'+this.state.picPath}}/>
-        <View>
-        <Form
-          ref="form"
-          type={Measurements}
-          value = {this.state.value}
-          onChange = {this.onChange}
-        />
-        </View>
-        <View style={styles.footer}>
-        <TouchableOpacity style={styles.button1}
-          onPress={this.deleteFile}>
-        <Text style={styles.text}>Delete</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button2}
-          onPress={this.onPress}>
-        <Text style={styles.text}>Save</Text>
-        </TouchableOpacity>
-        </View>
-      </ScrollView>
-    )
+    if(this.state.isLoading) {
+      return (
+        <ActivityIndicator
+        animating={true}
+        style={[styles.centering, {height: 600}]}
+        size="large"
+      />);
+    }else {
+      return (
+        <ScrollView style = {styles.container}>
+          <Image style={styles.image} source={{uri: 'file://'+this.state.picPath}}/>
+          <View>
+            <Form
+              ref="form"
+              type={Measurements}
+              value = {this.state.value}
+              onChange = {this.onChange}
+              />
+          </View>
+          <View style={styles.footer}>
+            <TouchableOpacity style={styles.button1}
+              onPress={this.deleteFile}>
+              <Text style={styles.text}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button2}
+              onPress={this.onPress}>
+              <Text style={styles.text}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      )
+
+    }
   }
 
 }
@@ -199,7 +272,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-  }
+  },
+   centering: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    padding: 8,
+  },
 });
 
 
