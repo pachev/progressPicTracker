@@ -179,7 +179,6 @@ class CameraView extends Component {
   }
 
   closeProgress = () => {
-    console.log("Shwoing Progress");
     this.setState({
       isOpen: false
     })
@@ -261,27 +260,18 @@ class CameraView extends Component {
           mirrorImage={false}
         >
           <View style={styles.toolbar}>
-              <TouchableOpacity
-                onPress = {this.onBackPressed}
-                >
               <Icon name='ios-arrow-back'
+                onPress = {this.onBackPressed}
                 style= {styles.backbutton}
                 size={30} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress = {this.showProgress}
-                >
               <Icon name='ios-body-outline'
+                onPress = {this.showProgress}
                 style= {{color:'white', right:130}}
                 size={30} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress = {this.onSettingsPressed}
-                >
               <Icon name='ios-settings'
+                onPress = {this.onSettingsPressed}
                 style= {styles.settings}
                 size={30} />
-              </TouchableOpacity>
           </View>
 
           <View style={styles.footer}>
@@ -394,8 +384,9 @@ const styles = StyleSheet.create({
   },
   separator: {
     padding: 1,
+    height: 320,
+    top: 17,
     backgroundColor: 'grey',
-    height: 260,
     width: StyleSheet.hairlineWidth,
   },
 });

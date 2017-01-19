@@ -42,9 +42,12 @@ class PausedPicture extends Component {
     AsyncStorage.getItem(Config.firstProgressKey)
     .then(value => {
       if(value !== null){
+        RNFS.exists(value)
+        .then(answer => {
           this.setState({
-            firstProgress: true
+            firstProgress: answer
           })
+        })
       }else{
         this.setState({firstProgress: false})
       }

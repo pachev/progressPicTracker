@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 
 
+const _ = require('lodash')
 //File System and unique number generator
 const RNFS = require('react-native-fs');
 const UUID = require('uuid/v1');
@@ -27,8 +28,27 @@ const TFORM = require('tcomb-form-native');
 //Main Paths
 const mainPicPath = Config.picPath;
 
+const stylesheet = _.cloneDeep(TFORM.form.Form.stylesheet);
+
+stylesheet.fieldset = {
+  flexDirection: 'row'
+};
+stylesheet.formGroup.normal.flex = 1;
+stylesheet.formGroup.error.flex = 1;
+stylesheet.formGroup.normal.padding = 5;
+stylesheet.formGroup.error.padding = 5;
+
+
+const options = {
+  stylesheet: stylesheet,
+  i18n: {
+    optional: '',
+    required: ''
+  }
+};
 
 const Form = TFORM.form.Form;
+
 
 // defining the measurements model for the form
 var Measurements = TFORM.struct({
@@ -72,7 +92,6 @@ class ImageView extends Component {
   onChange = (value) => {
     let loadedValue = value;
     loadedValue["dateTaken"] = this.props.dateTaken
-    console.log("loadedValue:", loadedValue);
 
     this.setState({
       value: loadedValue
@@ -97,10 +116,8 @@ class ImageView extends Component {
       console.log(err.message);
     });
 
-    console.log("firstTwo", this.state.firstTwo);
 
     if(this.state.picPath === this.state.lastTwo[1]) {
-      console.log("paths match");
       AsyncStorage.setItem(Config.currentProgressKey, this.state.lastTwo[0])
       .then(()=> {
         console.log("success replacing current")
@@ -108,14 +125,12 @@ class ImageView extends Component {
       })
       .catch(err => console.error(err))
     }else if (this.state.picPath === this.state.firstTwo[0]){
-      console.log('first path matches');
       AsyncStorage.setItem(Config.firstProgressKey, this.state.firstTwo[1])
       .then(()=> {
         console.log("success replacing first")
         this.goToCameraView();
       })
       .catch(err => console.error(err))
-      this.goToCameraView();
     }else{
       this.goToCameraView();
     }
@@ -126,13 +141,11 @@ class ImageView extends Component {
   loadMeasurements () {
       AsyncStorage.getItem(this.state.key)
       .then(value => {
-        console.log(value)
         if(value !== null) {
           let loadedValue = JSON.parse(value)
           this.setState({
             value: loadedValue
           })
-          console.log(loadedValue);
         }
       })
       .catch(error => console.error(error))
@@ -146,7 +159,6 @@ class ImageView extends Component {
         return file.name.split('.').pop() === 'jpg';
       });
 
-      console.log("results", results);
 
       if(results.length > 1 ) {
         results.slice(-2).map((file)=> {
@@ -161,9 +173,10 @@ class ImageView extends Component {
           isLoading: false,
         })
       }else {
+
         this.setState({
-          lastTwo: [null,results[0]],
-          firstTwo: [results[0],null],
+          lastTwo: [mainPicPath + "/default.jpg",results[0].path],
+          firstTwo: [results[0].path,mainPicPath + "/default.jpg"],
           isLoading: false
         })
 
@@ -205,6 +218,7 @@ class ImageView extends Component {
           <Image style={styles.image} source={{uri: 'file://'+this.state.picPath}}/>
           <View>
             <Form
+              options={options}
               ref="form"
               type={Measurements}
               value = {this.state.value}
@@ -218,7 +232,7 @@ class ImageView extends Component {
             </TouchableOpacity>
             <TouchableOpacity style={styles.button2}
               onPress={this.onPress}>
-              <Text style={styles.text}>Save</Text>
+              <Text style={styles.text}>Save  </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -241,7 +255,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
-    backgroundColor: 'white',
+    backgroundColor: 'red',
   },
   button2: {
     borderColor: '#8E8E8E',
@@ -249,10 +263,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
-    backgroundColor: 'white',
+    backgroundColor: 'green',
   },
   text: {
-    color: '#8E8E8E',
+    color: 'white',
   },
   separator: {
     flex: 1,
@@ -261,7 +275,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height / 1.7,
+    height: Dimensions.get('window').height * .75,
   },
   imageBox: {
     backgroundColor: 'white',
