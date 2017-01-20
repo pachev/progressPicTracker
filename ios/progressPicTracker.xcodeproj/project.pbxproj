@@ -1036,7 +1036,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_NAME = progressPicTracker;
+				PRODUCT_NAME = ProgressPicTracker;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1054,7 +1054,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_NAME = progressPicTracker;
+				PRODUCT_NAME = ProgressPicTracker;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

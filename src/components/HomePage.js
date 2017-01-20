@@ -208,19 +208,27 @@ class HomePage extends Component {
 //single row rendering function
   renderDateRow (rowData) {
 
+    //Future implementation of a menu icon on right
+    // <TouchableOpacity
+    //   onPress={()=> console.log("pressed")}>
+    //   <Text style={{padding: 8}}>...</Text>
+    // </TouchableOpacity>
+
     const key = rowData.slice(-40).slice(0,-4);
     const weight = this.state.allWeights[key]
     const date = this.state.dates[key]
 
 
     return (
-      <TouchableHighlight
-        onPress = {() => this.goToImageView(rowData, date)}>
       <View style={styles.imageBox}>
+        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={{padding: 8}}>Weight: {weight}</Text>
+        </View>
+        <TouchableHighlight
+        onPress = {() => this.goToImageView(rowData, date)}>
         <Image style={styles.image} source={{uri: 'file://'+rowData}}/>
-        <Text style={{padding: 8}}>Weight: {weight}</Text>
+        </TouchableHighlight>
       </View>
-      </TouchableHighlight>
 
     )
   }
@@ -252,7 +260,7 @@ class HomePage extends Component {
 
 
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: '#e8e8e8'}}>
         <StatusBar animated hidden/>
         <View style={toolbarStyle.toolbar}>
           <TouchableOpacity>
@@ -302,15 +310,16 @@ const styles = StyleSheet.create({
   },
   separator: {
     flex: 1,
+    padding: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#8E8E8E',
+    backgroundColor: '#A0A0A0',
   },
   image: {
     width: Dimensions.get('window').width,
-    height: 200,
+    height: Dimensions.get('window').height * .66,
   },
   imageBox: {
-    backgroundColor: 'white',
+    backgroundColor: '#f8f8f8',
   },
   headerSection: {
     flex: 1,

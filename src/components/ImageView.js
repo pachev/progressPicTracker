@@ -248,6 +248,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 1,
     margin: 2,
+    backgroundColor: '#e8e8e8'
   },
   button1: {
     borderColor: '#8E8E8E',
@@ -255,7 +256,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
-    backgroundColor: 'red',
+    left: 50,
+    backgroundColor: '#FFC1C1',
+    // backgroundColor: 'red',
   },
   button2: {
     borderColor: '#8E8E8E',
@@ -263,10 +266,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 5,
-    backgroundColor: 'green',
+    right: 50,
+    backgroundColor: '#C5E3BF',
+    // backgroundColor: 'green',
   },
   text: {
-    color: 'white',
+    color: '#8E8E8E',
   },
   separator: {
     flex: 1,
@@ -275,7 +280,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * .75,
+    height: Dimensions.get('window').height * .55,
   },
   imageBox: {
     backgroundColor: 'white',

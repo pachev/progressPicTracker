@@ -53,7 +53,7 @@ class CameraView extends Component {
         orientation: Camera.constants.Orientation.auto,
         flashMode: Camera.constants.FlashMode.auto,
       },
-      flashIcon: 'flash-off',
+      flashIcon: 'flash-auto',
       cameraIcon: 'camera-front',
       isOpen: false,
       modalLoading: false,
@@ -234,7 +234,6 @@ class CameraView extends Component {
                         </Text>
                         <Image style={styles.image} source={{uri: 'file://'+this.state.firstProgress}}/>
                       </View>
-                      <View style={styles.separator}/>
                       <View style={{alignItems: 'center'}}>
                         <Text style={{color: 'white'}}>
                           After:
@@ -260,7 +259,7 @@ class CameraView extends Component {
           mirrorImage={false}
         >
           <View style={styles.toolbar}>
-              <Icon name='ios-arrow-back'
+              <Icon name='md-arrow-round-back'
                 onPress = {this.onBackPressed}
                 style= {styles.backbutton}
                 size={30} />
