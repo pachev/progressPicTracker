@@ -29,6 +29,8 @@ const NumberAmount = TFORM.struct({
   value: TFORM.Number
 });
 
+const changeSettingList = Config.settings;
+
 class SubSettings extends Component {
   constructor(props) {
     super(props);
@@ -85,6 +87,8 @@ class SubSettings extends Component {
   }
 
   onPressSelection = (value) => {
+
+    let data = this.state.data;
     this.setState({
       selection: value,
       dataSource : new ListView.DataSource({
@@ -92,8 +96,126 @@ class SubSettings extends Component {
       }).cloneWithRows(this.props.data.options)
     });
 
-    this.saveSelection(value);
+      switch(value) {
+        case "KG":
+        case "LB":
+          if((value === "KG" && data.value !== "KG") ||
+          (value === "LB" && data.value !== "LB")) {
+            this.changeWeight(value);
+          }
+          break;
+        case "Inches":
+        case "Centimeters":
+          if((value === "Inches" && data.value !== "Inches") ||
+           (value === "Centimeters" && data.value !== "Centimeters")) {
+            this.changeMeasurements(value);
+          }
+          break;
+        default:
+          console.log(value);
+      }
 
+
+  }
+
+  changeWeight(value) {
+    let settingList = [],
+    retrievalKeys = [],
+    setList = [];
+
+    changeSettingList.map((setting) => {
+      if(setting.item === "Goal Weight"){
+        retrievalKeys.push(setting.category+"-"+setting.item);
+        settingList.push(setting);
+      }
+    });
+
+    AsyncStorage.multiGet(retrievalKeys, (err, stores) => {
+      stores.map( (result, i, store) => {
+        let key = store[i][0];
+        let val = store[i][1];
+        let pair = [];
+
+        console.log("kg value", val);
+        console.log("setting list value at i", settingList[i]);
+
+        if(val!== null) {
+          let currentValue = JSON.parse(val);
+          if(value === "KG"){
+            currentValue.value = (currentValue.value * 0.45).toFixed(2);
+            pair.push(key);
+            pair.push(JSON.stringify(currentValue));
+            setList.push(pair);
+          }else{
+            currentValue.value = (currentValue.value * 2.204).toFixed(2);
+            pair.push(key);
+            pair.push(JSON.stringify(currentValue));
+            setList.push(pair);
+          }
+        }else{
+          let currentValue = settingList[i];
+          pair.push(key);
+          pair.push(JSON.stringify(currentValue));
+          setList.push(pair);
+        }
+      })
+
+      console.log("setList", setList);
+      AsyncStorage.multiSet(setList, cb => {
+        console.log(cb);
+      });
+    });
+
+    this.saveSelection(value);
+  }
+
+  changeMeasurements (value) {
+
+    let settingList = [],
+    retrievalKeys = [],
+    setList = [];
+
+    changeSettingList.map((setting) => {
+      if(setting.type === Config.SettingType.CHANGENUMBER){
+        retrievalKeys.push(setting.category+"-"+setting.item);
+        settingList.push(setting);
+      }
+      });
+
+    AsyncStorage.multiGet(retrievalKeys, (err, stores) => {
+      stores.map( (result, i, store) => {
+        let key = store[i][0];
+        let val = JSON.parse(store[i][1]);
+        let pair = [];
+        console.log("lb value", val);
+        console.log("setting list", settingList[i]);
+
+        if(val!== null) {
+          if(value === "Inches"){
+            val.value = (val.value * 2.54).toFixed(2);
+            pair.push(key);
+            pair.push(JSON.stringify(val));
+            setList.push(pair);
+          }else{
+            val.value = (val.value / 2.54).toFixed(2);
+            pair.push(key);
+            pair.push(JSON.stringify(val));
+            setList.push(pair);
+          }
+        }else{
+          pair.push(key);
+          pair.push(JSON.stringify(settingList[i]));
+          setList.push(pair);
+        }
+      })
+
+      console.log("setList", setList);
+      AsyncStorage.multiSet(setList, cb => {
+        console.log(cb);
+      });
+    });
+
+    this.saveSelection(value);
   }
 
   emailMe = ()=> {
@@ -119,8 +241,10 @@ class SubSettings extends Component {
 
     switch (type) {
       case Config.SettingType.NUMBER:
+      case Config.SettingType.CHANGENUMBER:
+      console.log("it's a asf number");
           return(
-              <View style={styles.containern}>
+              <View style={styles.container}>
                 <Form
                   ref="form"
                   type = {NumberAmount}

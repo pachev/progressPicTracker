@@ -109,7 +109,7 @@ class Settings extends Component {
   onBackPressed = () => {
     this.props.navigator.pop({
       id: 'CameraView'
-    })
+    });
   }
 
   onItemPressed  (data) {

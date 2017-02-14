@@ -9,6 +9,7 @@ const SettingType = {
   SWITCH: 3,
   DISPLAY: 4,
   RATE: 5,
+  CHANGENUMBER: 6,
 }
 
 const settings = [
@@ -17,13 +18,13 @@ const settings = [
 {item: "Height", category: "UNITS",
   value: "Inches", options: ["Inches", "Centimeters"], selected: 0, type: SettingType.SELECTION},
 {item: "Goal Weight", category: "GOALS",
-   value: 0, options: ["amount"], type: SettingType.NUMBER},
+   value: 0.00, options: ["amount"], type: SettingType.NUMBER},
 {item: "Goal Waist", category: "GOALS",
-  value: 0, options: ["amount"], type: SettingType.NUMBER},
+  value: 0.00, options: ["amount"], type: SettingType.CHANGENUMBER},
 {item: "Goal Bicep", category: "GOALS",
-  value: 0, options: ["amount"], type: SettingType.NUMBER},
+  value: 0.00, options: ["amount"], type: SettingType.CHANGENUMBER},
 {item: "Height", category: "SETTINGS",
-  value: 0, options: ["amount"], type: SettingType.NUMBER},
+  value: 0.00, options: ["amount"], type: SettingType.CHANGENUMBER},
 {item: "Gender", category: "SETTINGS",
   value: "Male", options: ["Male", "Female"], type: SettingType.SELECTION},
 {item: "Age", category: "SETTINGS",

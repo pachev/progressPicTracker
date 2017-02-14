@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   backbutton: {
     backgroundColor: 'rgba(0,0,0,0)',
     color: 'white',
-    marginRight: 270,
+    marginRight: 271,
 
   },
   toolbar: {
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     padding: 1,
     height: 320,
     top: 17,
-    backgroundColor: 'grey',
+    backgroundColor: '#c0c0c0',
     width: StyleSheet.hairlineWidth,
   },
 });
